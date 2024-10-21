@@ -25,7 +25,7 @@
                 </li>
 
                 <li class="relative px-6 py-3">
-                    <NavLink :href="route('form')" :active="route().current('form')">
+                    <NavLink :href="route('reporte.index')" :active="route().current('reporte.index')">
                         <template #icon>
                             <svg fill="#001E50" width="30px" height="30px" viewBox="0 0 16 16" id="register-16px"
                                 xmlns="http://www.w3.org/2000/svg" stroke="#001E50" stroke-width="0.00016">

@@ -52,6 +52,8 @@ const eliminarEmpleado = (id) => {
     }
 };
 
+// console.log(props.empleados)
+
 </script>
 
 <template>
@@ -113,7 +115,7 @@ const eliminarEmpleado = (id) => {
                 <form action="">
 
                     <label for="Administrador">Administrador: </label>
-                    <Select>
+                    <Select >
                         <option v-for="empleado in empleados.Administrador" :key="empleado.id" :value="empleado.id">{{
                             empleado.nombre }}</option>
                     </Select>

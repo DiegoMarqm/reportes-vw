@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 use App\Http\Controllers\EmpleadoController;
+use App\Http\Controllers\ReporteController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -32,6 +33,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/empleados/create', [EmpleadoController::class, 'create'])->name('empleados.create');
     Route::post('/empleados', [EmpleadoController::class, 'store'])->name('empleados.store');
     Route::delete('/empleados/{id}', [EmpleadoController::class, 'destroy'])->name('empleados.destroy');
+
+
+    Route::get('/reporte', [ReporteController::class, 'index'])->name('reporte.index');
+    Route::get('/reporte/create', [ReporteController::class, 'create'])->name('reporte.create');
+
+
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');
 
