@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Empleado;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EmpleadoController extends Controller
 {
@@ -12,6 +13,17 @@ class EmpleadoController extends Controller
     {
         return Inertia::render('Empleados/FormularioEmpleados', [
             'empleados' => Empleado::all()->groupBy('rol')
+        ]);
+    }
+
+    public function getEmpleadosPorRol()
+    {
+        $empleadosPorRol = Empleado::select('rol', DB::raw('count(*) as total'))
+            ->groupBy('rol')
+            ->get();
+
+        return Inertia::render('Dashboard', [
+            'empleadosPorRol' => $empleadosPorRol
         ]);
     }
 

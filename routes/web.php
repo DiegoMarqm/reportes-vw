@@ -9,18 +9,22 @@ use Inertia\Inertia;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\ReporteController;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+// Route::get('/', function () {
+//     return Inertia::render('Welcome', [
+//         'canLogin' => Route::has('login'),
+//         'canRegister' => Route::has('register'),
+//         'laravelVersion' => Application::VERSION,
+//         'phpVersion' => PHP_VERSION,
+//     ]);
+// });
+
+Route::get('/', function (){
+    return Inertia::render('Welcome');
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [EmpleadoController::class, 'getEmpleadosPorRol'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 
 Route::middleware('auth')->group(function () {
@@ -37,6 +41,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/reporte', [ReporteController::class, 'index'])->name('reporte.index');
     Route::get('/reporte/create', [ReporteController::class, 'create'])->name('reporte.create');
+    Route::post('/reporte', [ReporteController::class, 'store'])->name('reporte.store');
+
 
 
 

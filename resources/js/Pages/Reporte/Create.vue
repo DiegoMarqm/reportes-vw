@@ -24,11 +24,29 @@ const tecnicos = computed(() => {
 
 // Inicializamos el formulario con los campos adicionales
 const form = useForm({
+    numFolio: '',              //Campo Numero de Folio
     departamento: '',        // Campo Departamento
     calificacion: '',         // Campo Calificación
     fechaQueja: '',           // Campo Fecha de la queja
-    fechaEntrega: '',         // Campo Fecha de entrega de la unidad
-    fechaIngreso: '',          // Campo Fecha de ingreso
+    fechaEntrega: '',         // Campo Fecha de entrega de la unidad puede estar vacio
+    fechaIngreso: '',          // Campo Fecha de ingreso puede estar vacio
+    formaDeteccion: '',       // Campo Forma que se detectó la queja
+    redSocial: '',            // Campo Red social puede ir vacio
+    nomCliente: '',        // Campo Nombre del Cliente
+    celularCliente: '',       // Campo Celular
+    emailCliente: '',         // Campo E-mail
+    asesor: '',               // Campo Asesor/Ejecutivo
+    tipoModelo: '',           // Campo Tipo/Modelo
+    placas: '',               // Campo Placas puede ir vacio
+    color: '',                // Campo Color
+    noOrden: '',              // Campo No. Orden
+    vin: '',                  // Campo No. de VIN
+    tecnico: '',              // Campo Técnico
+    reclamacion: '',          // Campo Reclamación
+    tipoReclamacion: '',      // Campo Tipo de reclamación
+    otroTipoReclamacion: '',  //Campo de Otro tipo de reclamacion puede ir vacio
+
+    // Causa Raiz va a ser un Array en el modelo y en la migracionesta indicado como tipo json y puede ir nulo o no
     causaRaiz: {
         personas: '',
         proceso: '',
@@ -37,27 +55,61 @@ const form = useForm({
         entorno: '',
         administracion: '',
     },
+
     medidas: [],
+
+    procedeQueja: false,         // Campo Procede la queja boleano
+    solucion: '',             // Campo Solución es un text
+    nombreCierre: '',         // Campo Nombre del personal de cierre es un select
+    fechaCierre: '',          // Campo Fecha de cierre es un date
+    nombreSeguimiento: '',    //Campo Nombre del personal que hace el seguimiento
+    fechaSeguimiento: '',    //Campo fecha dek seguimiento
+    comentariosCliente: '',  //Campo de comentarios del cliente
+
 });
 
 
 // Estado para controlar la visibilidad del modal
 const showModal = ref(false);
 
+// Función para agregar una medida
+const agregarMedida = () => {
+    form.medidas.push({
+        medida: '',
+        responsable: '',
+        fecha: ''
+    });
+};
+
+// Función para eliminar una medida
+const removeMedida = (index) => {
+    form.medidas.splice(index, 1);
+};
+
+
+
 const add = () => {
-    form.post(route('reportes.store'), {
+    form.post(route('reporte.store'), {
         onProgress: () => {
             form.processing = true;
+            console.log("Enviando formulario");
         },
         onSuccess: () => {
             form.reset();
             showModal.value = true;
 
+            console.log("Formulario enviado con éxito");
+
             setTimeout(() => {
                 showModal.value = false;
-                window.location.href = route('reportes.index');
+                window.location.href = route('reporte.index');
             }, 1500);
-        }
+        },
+
+        onError: () => {
+            console.log("Error al enviar el formulario");
+        },
+
     });
 };
 
@@ -78,6 +130,16 @@ console.log(props.empleados);
 
         <div class="p-4 space-y-8">
             <form @submit.prevent="add" class="bg-white rounded-lg shadow p-6 space-y-6">
+
+                <!-- Número de Folio -->
+                <div>
+                    <label for="numFolio" class="block text-gray-700">Número de Folio</label>
+                    <input type="text" v-model="form.numFolio" id="numFolio" name="numFolio"
+                        class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        placeholder="Ej. 123456">
+                    <span v-if="form.errors.numFolio" class="text-red-500 text-sm">{{ form.errors.numFolio }}</span>
+                </div>
+
                 <!-- Primera fila: Departamento y Calificación -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <!-- Campo Departamento -->
@@ -100,7 +162,7 @@ console.log(props.empleados);
                         <label for="calificacion" class="block text-gray-700">Calificación</label>
                         <input type="number" v-model="form.calificacion" id="calificacion" name="calificacion"
                             class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 placeholder-gray-500"
-                            placeholder="Ingrese la calificación" min="0" max="100" step="1">
+                            placeholder="Ingrese la calificación" min="1" max="5" step="1">
                         <span v-if="form.errors.calificacion" class="text-red-500 text-sm">{{ form.errors.calificacion
                             }}</span>
                     </div>
@@ -180,7 +242,7 @@ console.log(props.empleados);
                         <!-- Nombre del cliente -->
                         <div class="lg:w-1/3">
                             <label for="nombreCliente" class="block text-gray-700">Nombre del Cliente</label>
-                            <input type="text" v-model="form.nombreCliente" id="nombreCliente" name="nombreCliente"
+                            <input type="text" v-model="form.nomCliente" id="nombreCliente" name="nombreCliente"
                                 class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                 placeholder="Nombre completo">
                         </div>
@@ -412,7 +474,7 @@ console.log(props.empleados);
                                     <th class="border border-gray-300 px-4 py-2">Medida</th>
                                     <th class="border border-gray-300 px-4 py-2">Responsable</th>
                                     <th class="border border-gray-300 px-4 py-2">Fecha</th>
-                                    <!-- <th class="border border-gray-300 px-2 py-2">Acciones</th> -->
+                                    <th class="border border-gray-300 px-2 py-2">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -435,16 +497,18 @@ console.log(props.empleados);
                                         <input type="date" v-model="medida.fecha"
                                             class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     </td>
-                                    <!-- <td class="border border-gray-300 px-4 py-2">
+                                    <td class="border border-gray-300 px-4 py-2">
                                         <button @click="removeMedida(index)" class="text-red-500">Eliminar</button>
-                                    </td> -->
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
+
+                        <button @click="agregarMedida" class="mt-2 bg-blue-500 text-white rounded-md px-4 py-2">Agregar
+                            Medida</button>
                     </div>
 
-                    <button @click="addMedida" class="mt-2 bg-blue-500 text-white rounded-md px-4 py-2">Agregar
-                        Medida</button>
+
                 </div>
 
                 <!-- Sección: Procede la Queja -->
@@ -454,12 +518,12 @@ console.log(props.empleados);
                     </label>
                     <div class="flex justify-center items-center mt-2">
                         <div class="mr-4">
-                            <input type="radio" id="procedeSi" name="procedeQueja" value="si"
+                            <input type="radio" id="procedeSi" name="procedeQueja" :value="true"
                                 v-model="form.procedeQueja" class="mr-1" />
                             <label for="procedeSi" class="text-gray-700">Sí</label>
                         </div>
                         <div>
-                            <input type="radio" id="procedeNo" name="procedeQueja" value="no"
+                            <input type="radio" id="procedeNo" name="procedeQueja" :value="false"
                                 v-model="form.procedeQueja" class="mr-1" />
                             <label for="procedeNo" class="text-gray-700">No</label>
                         </div>
@@ -569,26 +633,16 @@ console.log(props.empleados);
                 </div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
                 <!-- Botones -->
                 <div class="flex justify-end">
                     <Link :href="route('reporte.index')"
                         class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 mr-2">Cancelar
                     </Link>
 
-                    <input type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-                        value="Enviar">
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Enviar
+                    </button>
+
+
                 </div>
             </form>
         </div>
