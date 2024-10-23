@@ -48,8 +48,16 @@ function toogleStatus(id){
         </template>
 
         <div class="py-12 bg-white">
-            <h1>{{ props.reporte.numFolio }}</h1>
+
+            <!-- Seccion Informacion -->
+            <h1 class="font-vwheadbold"> Folio :{{ props.reporte.numFolio }}</h1>
+            <h1>{{ props.reporte.departamento }}</h1>
+            <p>{{ props.reporte.calificacion }}</p>
+
+
             <p>{{ props.reporte.nomCliente }}</p>
+            <p>{{ props.reporte.tecnico }}</p>
+
             <p>Estado: {{ props.reporte.estado ? 'Activo' : 'Inactivo' }}</p>
 
             <!-- <button @click="toogleStatus(props.reporte.id)">Cambiar Estado</button> -->

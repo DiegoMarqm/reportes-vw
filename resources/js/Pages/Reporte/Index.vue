@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const props = defineProps({
     reporte: {
@@ -21,6 +21,11 @@ const form = useForm(
 
 const showDeleteModal = ref(false);
 const reporteToDelete = ref(null);
+
+//Busqueda
+
+const searchQuery = ref(''); // Variable para almacenar el valor del campo de búsqueda
+
 
 
 function toogleStatus(id){
@@ -55,6 +60,24 @@ const deleteReporte = () => {
     console.log('Eliminando reporte:', reporteToDelete.value);
     closeDeleteModal();
 };
+
+
+// Computed para filtrar los reportes según el texto de búsqueda
+const filteredReportes = computed(() => {
+    if (!searchQuery.value) return props.reporte.data;
+    return props.reporte.data.filter(infoReporte =>
+        infoReporte.numFolio.toString().toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        infoReporte.calificacion.toString().toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        infoReporte.departamento.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        (infoReporte.procedeQueja ? 'si' : 'no').toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        (infoReporte.estado ? 'activo' : 'finalizado').toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+});
+
+
+console.log(props.reporte);
+
+
 </script>
 
 <template>
@@ -72,7 +95,16 @@ const deleteReporte = () => {
             </Link>
         </div>
 
-        //Agregar la barra de busqueda (filtrador de busqueda)
+        <!-- //Agregar la barra de busqueda (filtrador de busqueda) -->
+         <!-- Barra de búsqueda -->
+         <div class="p-4">
+            <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="Buscar reportes..."
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200"
+            />
+        </div>
 
         <div class="p-4">
             <div class="bg-white shadow-md rounded-lg overflow-x-auto">
@@ -104,7 +136,7 @@ const deleteReporte = () => {
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="infoReporte in reporte" :key="infoReporte.id" class="hover:bg-gray-50">
+                        <tr v-for="infoReporte in filteredReportes" :key="infoReporte.id" class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ infoReporte.numFolio }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ infoReporte.calificacion }}
@@ -149,6 +181,28 @@ const deleteReporte = () => {
                 </table>
             </div>
         </div>
+
+        <!-- Paginación -->
+        <div class="p-4">
+            <ul class="flex justify-center space-x-2">
+                <li v-if="props.reporte.prev_page_url">
+                    <Link :href="props.reporte.prev_page_url" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                        Anterior
+                    </Link>
+                </li>
+                <li v-for="page in props.reporte.last_page" :key="page">
+                    <Link :href="`${props.reporte.path}?page=${page}`" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                        {{ page }}
+                    </Link>
+                </li>
+                <li v-if="props.reporte.next_page_url">
+                    <Link :href="props.reporte.next_page_url" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                        Siguiente
+                    </Link>
+                </li>
+            </ul>
+        </div>
+
 
         <!-- Modal de confirmación de eliminación -->
         <transition enter-active-class="ease-out duration-300" enter-from-class="opacity-0" enter-to-class="opacity-100"

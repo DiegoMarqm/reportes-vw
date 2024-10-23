@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\Report;
 use App\Models\Empleado;
-
+use Illuminate\Database\Eloquent\Casts\Json;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -16,7 +17,8 @@ class ReporteController extends Controller
     public function index()
     {
 
-        $reporte = Report::all();
+        // $reporte = Report::all();
+        $reporte = Report::paginate(1);
 
         return Inertia::render('Reporte/Index',[
             'reporte' => $reporte
