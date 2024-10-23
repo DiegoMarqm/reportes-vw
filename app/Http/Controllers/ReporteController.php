@@ -94,4 +94,34 @@ class ReporteController extends Controller
 
         return redirect()->route('reporte.index');
     }
+
+    //Agregar la funcion para ver la informacion completa del reporte:
+    public function showReporte($id)
+    {
+        $reporte = Report::find($id);
+
+        if ($reporte){
+            return Inertia::render('Reporte/ShowReporte', [
+                'reporte' => $reporte
+            ]);
+        }else{
+            return redirect()->route('reporte.index')->with('error', 'Reporte no encontrado');
+        }
+    }
+
+    public function toogleEstado($id)
+    {
+
+        $reporte = Report::find($id);
+
+        if ($reporte){
+            $reporte->estado = !$reporte->estado;
+            $reporte->save();
+
+            return redirect()->route('reporte.index')->with('success', 'Cambio Exitoso');
+        }else{
+            return redirect()->route('reporte.index')->with('error', 'Reporte no encontrado');
+        }
+
+    }
 }

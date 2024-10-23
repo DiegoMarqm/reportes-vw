@@ -43,6 +43,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/reporte/create', [ReporteController::class, 'create'])->name('reporte.create');
     Route::post('/reporte', [ReporteController::class, 'store'])->name('reporte.store');
 
+    Route::get('/reporte/{infoReporte}', [ReporteController::class, 'showReporte'])->name('reporte.show');
+
+    Route::post('reporte/{infoReporte}/toggle-status', [ReporteController::class, 'toogleEstado'])->name('reporte.toggleEstado');
+
 
 
 
