@@ -17,8 +17,8 @@ class ReporteController extends Controller
     public function index()
     {
 
-        // $reporte = Report::all();
-        $reporte = Report::paginate(1);
+        $reporte = Report::all();
+        // $reporte = Report::paginate(2);
 
         return Inertia::render('Reporte/Index',[
             'reporte' => $reporte
@@ -102,11 +102,11 @@ class ReporteController extends Controller
     {
         $reporte = Report::find($id);
 
-        if ($reporte){
+        if ($reporte) {
             return Inertia::render('Reporte/ShowReporte', [
                 'reporte' => $reporte
             ]);
-        }else{
+        } else {
             return redirect()->route('reporte.index')->with('error', 'Reporte no encontrado');
         }
     }
@@ -116,14 +116,13 @@ class ReporteController extends Controller
 
         $reporte = Report::find($id);
 
-        if ($reporte){
+        if ($reporte) {
             $reporte->estado = !$reporte->estado;
             $reporte->save();
 
             return redirect()->route('reporte.index')->with('success', 'Cambio Exitoso');
-        }else{
+        } else {
             return redirect()->route('reporte.index')->with('error', 'Reporte no encontrado');
         }
-
     }
 }

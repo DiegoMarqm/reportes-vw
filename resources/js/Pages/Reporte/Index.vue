@@ -64,8 +64,8 @@ const deleteReporte = () => {
 
 // Computed para filtrar los reportes según el texto de búsqueda
 const filteredReportes = computed(() => {
-    if (!searchQuery.value) return props.reporte.data;
-    return props.reporte.data.filter(infoReporte =>
+    if (!searchQuery.value) return props.reporte;
+    return props.reporte.filter(infoReporte =>
         infoReporte.numFolio.toString().toLowerCase().includes(searchQuery.value.toLowerCase()) ||
         infoReporte.calificacion.toString().toLowerCase().includes(searchQuery.value.toLowerCase()) ||
         infoReporte.departamento.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
@@ -73,9 +73,6 @@ const filteredReportes = computed(() => {
         (infoReporte.estado ? 'activo' : 'finalizado').toLowerCase().includes(searchQuery.value.toLowerCase())
     );
 });
-
-
-console.log(props.reporte);
 
 
 </script>
@@ -181,28 +178,6 @@ console.log(props.reporte);
                 </table>
             </div>
         </div>
-
-        <!-- Paginación -->
-        <div class="p-4">
-            <ul class="flex justify-center space-x-2">
-                <li v-if="props.reporte.prev_page_url">
-                    <Link :href="props.reporte.prev_page_url" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
-                        Anterior
-                    </Link>
-                </li>
-                <li v-for="page in props.reporte.last_page" :key="page">
-                    <Link :href="`${props.reporte.path}?page=${page}`" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
-                        {{ page }}
-                    </Link>
-                </li>
-                <li v-if="props.reporte.next_page_url">
-                    <Link :href="props.reporte.next_page_url" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
-                        Siguiente
-                    </Link>
-                </li>
-            </ul>
-        </div>
-
 
         <!-- Modal de confirmación de eliminación -->
         <transition enter-active-class="ease-out duration-300" enter-from-class="opacity-0" enter-to-class="opacity-100"
