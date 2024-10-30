@@ -59,23 +59,8 @@ const deleteReporte = () => {
 };
 
 
-//Obtener la mes mas antiguo de las quejas
 
-const obtenerFechaMasAntigua = () => {
-    const fechas = props.reporte.map(infoReporte => new Date(infoReporte.fechaQueja));
-    return new Date(Math.min.apply(null, fechas));
-};
 
-//Obtener la mes mas reciente de las quejas
-const obtenerFechaMasReciente = () => {
-    const fechas = props.reporte.map(infoReporte => new Date(infoReporte.fechaQueja));
-    return new Date(Math.max.apply(null, fechas));
-};
-
-//mostrar por consola la fecha mas antigua y la mas reciente:
-
-console.log('Fecha más antigua:', obtenerFechaMasAntigua());
-console.log('Fecha más reciente:', obtenerFechaMasReciente());
 
 const searchQuery = ref(''); // Búsqueda por folio único
 const advancedSearch = ref(false); // Toggle para activar la búsqueda avanzada
@@ -86,6 +71,8 @@ const calificacion = ref('');
 const estado = ref('');
 const procedeQueja = ref('');
 const fechaSeleccionada = ref(''); // Almacena el rango de tiempo seleccionado
+const fechaEspecifica = ref('');
+
 const isSearching = ref(false);
 const noHayReportes = ref(false);
 
@@ -111,6 +98,7 @@ const limpiarFiltros = () => {
     estado.value = '';
     procedeQueja.value = '';
     fechaSeleccionada.value = '';
+    fechaEspecifica.value = '';
     applyFilters();
 };
 
@@ -127,7 +115,7 @@ const applyFilters = () => {
             const cumpleCalificacion = !calificacion.value || infoReporte.calificacion.toString().includes(calificacion.value);
             const cumpleEstado = !estado.value || ((infoReporte.estado ? 'activo' : 'finalizado') === estado.value);
             const cumpleProcedeQueja = !procedeQueja.value || ((infoReporte.procedeQueja ? 'si' : 'no') === procedeQueja.value);
-            const cumpleFecha = !fechaSeleccionada.value || checkFechaQueja(infoReporte.fechaQueja);
+            const cumpleFecha = checkFechaQueja(infoReporte.fechaQueja);
 
             return cumpleDepartamento && cumpleCalificacion && cumpleEstado && cumpleProcedeQueja && cumpleFecha;
         }
@@ -140,34 +128,62 @@ const checkFechaQueja = (fechaQueja) => {
     const hoy = new Date();
     const fecha = new Date(fechaQueja);
 
-    switch (fechaSeleccionada.value) {
-        case '1_mes':
-            return fecha > new Date(hoy.setMonth(hoy.getMonth() - 1));
-        case '3_meses':
-            return fecha > new Date(hoy.setMonth(hoy.getMonth() - 3));
-        case '6_meses':
-            return fecha > new Date(hoy.setMonth(hoy.getMonth() - 6));
-        case '1_año':
-            return fecha > new Date(hoy.setFullYear(hoy.getFullYear() - 1));
-        case 'anteriores':
-            return fecha <= new Date(hoy.setFullYear(hoy.getFullYear() - 1));
-        default:
-            return true;
+    let inicioRango = null;
+    let finRango = hoy;
+
+    if (fechaEspecifica.value) {
+        const [year, month] = fechaEspecifica.value.split('-');
+        inicioRango = new Date(year, month - 1, 1);
+        finRango = new Date(year, month, 0, 23, 59, 59);
+    }
+
+    if (fechaSeleccionada.value) {
+        switch (fechaSeleccionada.value) {
+            case '1_mes':
+                inicioRango = inicioRango ? new Date(inicioRango) : new Date(hoy);
+                inicioRango.setMonth(inicioRango.getMonth() - 1);
+                break;
+            case '3_meses':
+                inicioRango = inicioRango ? new Date(inicioRango) : new Date(hoy);
+                inicioRango.setMonth(inicioRango.getMonth() - 2);
+                break;
+            case '6_meses':
+                inicioRango = inicioRango ? new Date(inicioRango) : new Date(hoy);
+                inicioRango.setMonth(inicioRango.getMonth() - 5);
+                break;
+            case '1_año':
+                inicioRango = inicioRango ? new Date(inicioRango) : new Date(hoy);
+                inicioRango.setFullYear(inicioRango.getFullYear() - 1);
+                break;
+            case 'anteriores':
+                inicioRango = inicioRango ? new Date(inicioRango) : new Date(hoy);
+                inicioRango.setFullYear(inicioRango.getFullYear() - 1);
+                finRango = inicioRango;
+                inicioRango = null;
+                break;
+            default:
+                break;
+        }
+    }
+
+    if (inicioRango) {
+        return fecha >= inicioRango && fecha <= finRango;
+    } else {
+        return fecha <= finRango;
     }
 };
 
+
 // Aplicar filtros cuando cambie cualquier valor de búsqueda
-watch([searchQuery, advancedSearch, departamento, calificacion, estado, procedeQueja, fechaSeleccionada], async () => {
-  isSearching.value = true;
-  await new Promise(resolve => setTimeout(resolve, 300)); // Debounce
-  applyFilters();
-  isSearching.value = false;
+watch([searchQuery, advancedSearch, departamento, calificacion, estado, procedeQueja, fechaSeleccionada, fechaEspecifica], async () => {
+    isSearching.value = true;
+    await new Promise(resolve => setTimeout(resolve, 300)); // Debounce
+    applyFilters();
+    isSearching.value = false;
 });
 
 // Exponer filteredReportes para que el componente padre pueda acceder a él
 defineExpose({ filteredReportes });
-
-
 
 
 console.log(props.reporte);
@@ -249,14 +265,9 @@ console.log(props.reporte);
                                     <!-- Elegir la fecha en meses en actual seria por ejemplo la fecha actual, en este caso: Octubre 24, pero ahi ya seria en Rango de fecha de queja-->
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2"
-                                            for="fecha">Fecha especifica</label>
-                                        <select v-model="fechaSeleccionada" id="fechaSeleccionada"
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-                                            <option value="">Actual</option>
-
-
-                                        </select>
+                                            for="fechaEspecifica">Fecha específica</label>
+                                        <input type="month" v-model="fechaEspecifica" id="fechaEspecifica"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2"
@@ -272,6 +283,11 @@ console.log(props.reporte);
                                         </select>
                                     </div>
                                 </div>
+
+
+                                <!-- Button para limpiar filtros -->
+                                <button @click="limpiarFiltros" class="px-4 py-2 my-9 bg-red-500 text-white rounded hover:bg-red-
+                             700">Limpiar Filtros</button>
                             </div>
                         </transition>
 
@@ -280,6 +296,9 @@ console.log(props.reporte);
                                 class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
                             Agregar Reporte
                             </Link>
+
+
+
                             <div v-if="isSearching" class="flex items-center text-gray-500">
                                 <svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
                                     viewBox="0 0 24 24">
