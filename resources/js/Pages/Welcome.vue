@@ -56,51 +56,61 @@ onMounted(() => {
     if (props.auth.user) {
         window.location.href = route('dashboard');
     }
+    // else{
+    //     console.log('no hay usuario logeado')
+    // }
 });
+
 </script>
 
 <template>
     <GuestLayout>
+
         <Head title="Login"></Head>
         <div class="flex flex-col overflow-y-auto md:flex-row ">
-			<div class="h-44 md:h-auto md:w-1/2">
+            <div class="h-44 md:h-auto md:w-1/2">
 				<img aria-hidden="true" class="object-cover w-full h-full" src="https://vw-huasteca.com.mx/Assets/ModelosNuevos/PortaHome/web_1920x720.jpg" alt="Office" />
 			</div>
-			<div class="flex items-center justify-center p-6 sm:p-12 md:w-1/2">
-				<div class="w-full">
-					<h1 class="mb-4 text-xl font-semibold text-gray-700 font-vwheadbold">Inicia Sesión</h1>
 
-					<div v-if="status" class="mb-4 text-sm font-medium text-green-600">
-						{{ status }}
-					</div>
+            <div class="flex items-center justify-center p-6 sm:p-12 md:w-1/2">
+                <div class="w-full">
+                    <h1 class="mb-4 text-xl font-semibold text-gray-700 font-vwheadbold">Inicia Sesión</h1>
 
-					<form @submit.prevent="submit">
-						<div class="mt-4">
-							<InputLabel for="email" value="Usuario" />
-							<TextInput id="email" type="email" class="block w-full mt-1" v-model="form.email" required autofocus autocomplete="username" />
-							<InputError class="mt-2" :message="form.errors.email" />
-						</div>
+                    <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
+                        {{ status }}
+                    </div>
 
-						<div class="mt-4">
-							<InputLabel for="password" value="Contraseña" />
-							<TextInput id="password" type="password" class="block w-full mt-1" v-model="form.password" required autocomplete="current-password" />
-							<InputError class="mt-2" :message="form.errors.password" />
-						</div>
+                    <form @submit.prevent="submit">
+                        <div class="mt-4">
+                            <InputLabel for="email" value="Usuario" />
+                            <TextInput id="email" type="email" class="block w-full mt-1" v-model="form.email" required
+                                autofocus autocomplete="username" />
+                            <InputError class="mt-2" :message="form.errors.email" />
+                        </div>
+
+                        <div class="mt-4">
+                            <InputLabel for="password" value="Contraseña" />
+                            <TextInput id="password" type="password" class="block w-full mt-1" v-model="form.password"
+                                required autocomplete="current-password" />
+                            <InputError class="mt-2" :message="form.errors.password" />
+                        </div>
 
 
-						<div class="flex items-center justify-end mt-4">
-							<Link v-if="canResetPassword" :href="route('password.request')" class="text-sm text-gray-600 underline  hover:text-gray-900">
-								Forgot your password?
-							</Link>
+                        <div class="flex items-center justify-center mt-4">
+                            <!-- <Link v-if="canResetPassword" :href="route('password.request')"
+                                class="text-sm text-gray-600 underline  hover:text-gray-900">
+                            Forgot your password?
+                            </Link> -->
 
-							<PrimaryButton class="ml-4 font-vwtext" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-								Entrar
-							</PrimaryButton>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
+                            <PrimaryButton class="ml-4 font-vwtext" :class="{ 'opacity-25': form.processing }"
+                                :disabled="form.processing">
+                                Entrar
+                            </PrimaryButton>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </GuestLayout>
 
 </template>

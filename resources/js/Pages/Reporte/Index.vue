@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 const props = defineProps({
     reporte: {
@@ -22,21 +22,18 @@ const form = useForm(
 const showDeleteModal = ref(false);
 const reporteToDelete = ref(null);
 
-//Busqueda
-
-const searchQuery = ref(''); // Variable para almacenar el valor del campo de búsqueda
 
 
 
-function toogleStatus(id){
+function toogleStatus(id) {
 
-    form.post(route('reporte.toggleEstado', id),{
+    form.post(route('reporte.toggleEstado', id), {
 
         onSuccess: () => {
             console.log('Cambiando estado del reporte:', id);
         },
 
-        onFinish: () =>{
+        onFinish: () => {
             console.log('Cambiando estado del reporte:', id);
         }
 
@@ -62,49 +59,250 @@ const deleteReporte = () => {
 };
 
 
-// Computed para filtrar los reportes según el texto de búsqueda
-const filteredReportes = computed(() => {
-    if (!searchQuery.value) return props.reporte;
-    return props.reporte.filter(infoReporte =>
-        infoReporte.numFolio.toString().toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        infoReporte.calificacion.toString().toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        infoReporte.departamento.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        (infoReporte.procedeQueja ? 'si' : 'no').toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        (infoReporte.estado ? 'activo' : 'finalizado').toLowerCase().includes(searchQuery.value.toLowerCase())
-    );
+//Obtener la mes mas antiguo de las quejas
+
+const obtenerFechaMasAntigua = () => {
+    const fechas = props.reporte.map(infoReporte => new Date(infoReporte.fechaQueja));
+    return new Date(Math.min.apply(null, fechas));
+};
+
+//Obtener la mes mas reciente de las quejas
+const obtenerFechaMasReciente = () => {
+    const fechas = props.reporte.map(infoReporte => new Date(infoReporte.fechaQueja));
+    return new Date(Math.max.apply(null, fechas));
+};
+
+//mostrar por consola la fecha mas antigua y la mas reciente:
+
+console.log('Fecha más antigua:', obtenerFechaMasAntigua());
+console.log('Fecha más reciente:', obtenerFechaMasReciente());
+
+const searchQuery = ref(''); // Búsqueda por folio único
+const advancedSearch = ref(false); // Toggle para activar la búsqueda avanzada
+
+// Campos de búsqueda avanzada
+const departamento = ref('');
+const calificacion = ref('');
+const estado = ref('');
+const procedeQueja = ref('');
+const fechaSeleccionada = ref(''); // Almacena el rango de tiempo seleccionado
+const isSearching = ref(false);
+const noHayReportes = ref(false);
+
+
+
+
+const toggleAdvancedSearch = () => {
+    advancedSearch.value = !advancedSearch.value;
+    if (!advancedSearch.value) {
+        limpiarFiltros();
+    }
+};
+
+const buscarReportes = () => {
+    // Esta función ahora actualizará el filteredReportes
+    applyFilters();
+};
+
+const limpiarFiltros = () => {
+    searchQuery.value = '';
+    departamento.value = '';
+    calificacion.value = '';
+    estado.value = '';
+    procedeQueja.value = '';
+    fechaSeleccionada.value = '';
+    applyFilters();
+};
+
+const filteredReportes = ref(props.reporte);
+
+const applyFilters = () => {
+    filteredReportes.value = props.reporte.filter(infoReporte => {
+        if (!advancedSearch.value) {
+            // Búsqueda por folio único
+            return !searchQuery.value || infoReporte.numFolio.toString().toLowerCase().includes(searchQuery.value.toLowerCase());
+        } else {
+            // Búsqueda avanzada
+            const cumpleDepartamento = !departamento.value || infoReporte.departamento.toLowerCase().includes(departamento.value.toLowerCase());
+            const cumpleCalificacion = !calificacion.value || infoReporte.calificacion.toString().includes(calificacion.value);
+            const cumpleEstado = !estado.value || ((infoReporte.estado ? 'activo' : 'finalizado') === estado.value);
+            const cumpleProcedeQueja = !procedeQueja.value || ((infoReporte.procedeQueja ? 'si' : 'no') === procedeQueja.value);
+            const cumpleFecha = !fechaSeleccionada.value || checkFechaQueja(infoReporte.fechaQueja);
+
+            return cumpleDepartamento && cumpleCalificacion && cumpleEstado && cumpleProcedeQueja && cumpleFecha;
+        }
+    });
+    // Actualizar el mensaje de "No hay reportes"
+    noHayReportes.value = filteredReportes.value.length === 0;
+};
+
+const checkFechaQueja = (fechaQueja) => {
+    const hoy = new Date();
+    const fecha = new Date(fechaQueja);
+
+    switch (fechaSeleccionada.value) {
+        case '1_mes':
+            return fecha > new Date(hoy.setMonth(hoy.getMonth() - 1));
+        case '3_meses':
+            return fecha > new Date(hoy.setMonth(hoy.getMonth() - 3));
+        case '6_meses':
+            return fecha > new Date(hoy.setMonth(hoy.getMonth() - 6));
+        case '1_año':
+            return fecha > new Date(hoy.setFullYear(hoy.getFullYear() - 1));
+        case 'anteriores':
+            return fecha <= new Date(hoy.setFullYear(hoy.getFullYear() - 1));
+        default:
+            return true;
+    }
+};
+
+// Aplicar filtros cuando cambie cualquier valor de búsqueda
+watch([searchQuery, advancedSearch, departamento, calificacion, estado, procedeQueja, fechaSeleccionada], async () => {
+  isSearching.value = true;
+  await new Promise(resolve => setTimeout(resolve, 300)); // Debounce
+  applyFilters();
+  isSearching.value = false;
 });
 
+// Exponer filteredReportes para que el componente padre pueda acceder a él
+defineExpose({ filteredReportes });
 
+
+
+
+console.log(props.reporte);
 </script>
+
 
 <template>
 
     <Head title="Reportes" />
 
     <AuthenticatedLayout>
-        <template #header>
-            Reportes Index
-        </template>
+        <div class="bg-gray-100 p-4">
+            <div class="max-w-7xl mx-auto">
+                <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                    <div class="p-4">
+                        <div class="mb-6">
+                            <div class="relative">
+                                <input v-if="!advancedSearch" v-model="searchQuery" type="text"
+                                    placeholder="Buscar por número de folio..."
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300" />
+                                <button @click="toggleAdvancedSearch"
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition duration-300">
+                                    <svg v-if="!advancedSearch" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                                    </svg>
+                                    <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
 
-        <div class="p-4">
-            <Link :href="route('reporte.create')" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
-            Agregar Reporte
-            </Link>
+                        <transition enter-active-class="transition duration-300 ease-out"
+                            enter-from-class="transform scale-95 opacity-0"
+                            enter-to-class="transform scale-100 opacity-100"
+                            leave-active-class="transition duration-200 ease-in"
+                            leave-from-class="transform scale-100 opacity-100"
+                            leave-to-class="transform scale-95 opacity-0">
+                            <div v-if="advancedSearch" class="bg-gray-50 rounded-lg p-6 mb-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2"
+                                            for="departamento">Departamento</label>
+                                        <input v-model="departamento" id="departamento" type="text"
+                                            placeholder="Buscar por departamento"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2"
+                                            for="calificacion">Calificación</label>
+                                        <input v-model="calificacion" id="calificacion" type="text"
+                                            placeholder="Buscar por calificación"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2"
+                                            for="estado">Estado</label>
+                                        <select v-model="estado" id="estado"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="">Selecciona estado</option>
+                                            <option value="activo">Activo</option>
+                                            <option value="finalizado">Finalizado</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2"
+                                            for="procedeQueja">¿Procede Queja?</label>
+                                        <select v-model="procedeQueja" id="procedeQueja"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="">Selecciona</option>
+                                            <option value="si">Sí</option>
+                                            <option value="no">No</option>
+                                        </select>
+                                    </div>
+                                    <!-- Elegir la fecha en meses en actual seria por ejemplo la fecha actual, en este caso: Octubre 24, pero ahi ya seria en Rango de fecha de queja-->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2"
+                                            for="fecha">Fecha especifica</label>
+                                        <select v-model="fechaSeleccionada" id="fechaSeleccionada"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                                            <option value="">Actual</option>
+
+
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2"
+                                            for="fechaSeleccionada">Rango de Fecha de Queja</label>
+                                        <select v-model="fechaSeleccionada" id="fechaSeleccionada"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="">Todas</option>
+                                            <option value="1_mes">Último mes</option>
+                                            <option value="3_meses">Últimos 3 meses</option>
+                                            <option value="6_meses">Últimos 6 meses</option>
+                                            <option value="1_año">Último año</option>
+                                            <option value="anteriores">Años anteriores</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </transition>
+
+                        <div class="flex justify-between items-center mt-4">
+                            <Link :href="route('reporte.create')"
+                                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
+                            Agregar Reporte
+                            </Link>
+                            <div v-if="isSearching" class="flex items-center text-gray-500">
+                                <svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                                Buscando..🔍
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- //Agregar la barra de busqueda (filtrador de busqueda) -->
-         <!-- Barra de búsqueda -->
-         <div class="p-4">
-            <input
-                v-model="searchQuery"
-                type="text"
-                placeholder="Buscar reportes..."
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200"
-            />
-        </div>
-
         <div class="p-4">
-            <div class="bg-white shadow-md rounded-lg overflow-x-auto">
+            <div class="bg-white shadow-md rounded-lg overflow-x-auto" v-if="noHayReportes">
+                No hay Reportes
+
+            </div>
+            <div class="bg-white shadow-md rounded-lg overflow-x-auto" v-else>
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -114,7 +312,7 @@ const filteredReportes = computed(() => {
                                 Folio</th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Calificación</th>
+                                Fecha de la queja</th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Departamento</th>
@@ -136,7 +334,7 @@ const filteredReportes = computed(() => {
                         <tr v-for="infoReporte in filteredReportes" :key="infoReporte.id" class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ infoReporte.numFolio }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ infoReporte.calificacion }}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ infoReporte.fechaQueja }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ infoReporte.departamento }}
                             </td>
@@ -161,7 +359,9 @@ const filteredReportes = computed(() => {
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
 
 
-                                <Link :href="`/reporte/${infoReporte.id}`" class="text-blue-600 hover:text-blue-900 mr-2">Ver</Link>
+                                <Link :href="`/reporte/${infoReporte.id}`"
+                                    class="text-blue-600 hover:text-blue-900 mr-2">Ver
+                                </Link>
 
                                 <button v-if="infoReporte.estado" class="text-indigo-600 hover:text-indigo-900 mr-2">
                                     Editar

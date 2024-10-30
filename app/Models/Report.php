@@ -92,7 +92,7 @@ class Report extends Model
                     'campo' => $campo,
                     'fecha' => now(),
                     // 'fecha' => now()->toDateTimeString()
-                    'descricion' => sprintf("Campo '%s' se editó", $campo),
+                    'descripcion' => sprintf("Campo '%s' se editó", $campo),
                 ];
             }
 

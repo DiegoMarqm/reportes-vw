@@ -43,9 +43,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/reporte/create', [ReporteController::class, 'create'])->name('reporte.create');
     Route::post('/reporte', [ReporteController::class, 'store'])->name('reporte.store');
 
-    Route::get('/reporte/{infoReporte}', [ReporteController::class, 'showReporte'])->name('reporte.show');
+    //Route EditReporte
+    Route::get('/reporte/{infoReporte}/edit', [ReporteController::class, 'editReporte'])->name('reporte.edit');
+    Route::put('/reporte/{infoReporte}', [ReporteController::class, 'update'])->name('reporte.update');
 
+
+    Route::get('/reporte/{infoReporte}', [ReporteController::class, 'showReporte'])->name('reporte.show');
     Route::post('reporte/{infoReporte}/toggle-status', [ReporteController::class, 'toogleEstado'])->name('reporte.toggleEstado');
+    Route::get('/reporte/{id}/pdf', [ReporteController::class, 'generarPDF'])->name('reporte.generarPDF');
+    Route::post('/reporte/{id}/subirPDF', [ReporteController::class, 'subirPDF'])->name('reporte.subirPDF');
+    Route::delete('/reporte/{id}/eliminarPDF', [ReporteController::class, 'eliminarPDF'])->name('reporte.eliminarPDF');
+
 
 
 
