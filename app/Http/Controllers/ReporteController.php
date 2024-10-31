@@ -264,4 +264,65 @@ class ReporteController extends Controller
         }
         return back()->with('error', 'No se encontró ningún archivo para eliminar.');
     }
+
+
+    //Funcion para subir evidencias y guardarlos en una carpeta /evidencias/numFolio
+    public function subirEvidencia(Request $request, $id)
+    {
+        $reporte = Report::findOrFail($id);
+        $numFolio = $reporte->numFolio;
+
+        $request->validate([
+            'evidenciasReporte.*' => 'required|mimes:jpg,jpeg,png,svg|max:5120',
+
+        ]);
+
+        $path = 'evidencias/' . $numFolio;
+        $evidencias = $reporte->evidenciasReporte ?? [];
+
+        foreach ($request->file('evidenciasReporte') as $file) {
+            $fileName = $file->getClientOriginalName();
+            $file->storeAs($path, $fileName, 'public');
+            $evidencias[] = $path . '/' . $fileName;
+        }
+
+        $reporte->update([
+            'evidenciasReporte' => $evidencias,
+        ]);
+
+        return back()->with('success', 'La evidencia se ha subido correctamente.');
+    }
+
+    // Funcion para eliminar la evidencia que se quiera eliminar
+
+    public function eliminarEvidencia($id, $index)
+    {
+        $reporte = Report::findOrFail($id);
+        $evidencias = $reporte->evidenciasReporte;
+
+        if (isset($evidencias[$index])) {
+            $evidencia = $evidencias[$index];
+
+            // Eliminar la imagen del sistema de archivos
+            $rutaEvidencia = $evidencia;
+
+
+            if (Storage::disk('public')->exists($rutaEvidencia)) {
+                Storage::disk('public')->delete($rutaEvidencia);
+            }
+
+            // if (file_exists($rutaEvidencia)) {
+            //     unlink($rutaEvidencia);
+            // }
+
+            // Eliminar la evidencia del array y actualizar el reporte
+            unset($evidencias[$index]);
+            $reporte->evidenciasReporte = array_values($evidencias); // Reindexar el array
+            $reporte->save();
+
+            return back()->with('success', 'La evidencia se ha eliminado correctamente.');
+        }
+
+        return back()->with('error', 'La evidencia no existe.');
+    }
 }

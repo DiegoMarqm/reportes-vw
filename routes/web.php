@@ -18,7 +18,7 @@ use App\Http\Controllers\ReporteController;
 //     ]);
 // });
 
-Route::get('/', function (){
+Route::get('/', function () {
     return Inertia::render('Welcome');
 });
 
@@ -54,6 +54,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/reporte/{id}/subirPDF', [ReporteController::class, 'subirPDF'])->name('reporte.subirPDF');
     Route::delete('/reporte/{id}/eliminarPDF', [ReporteController::class, 'eliminarPDF'])->name('reporte.eliminarPDF');
 
+    //Subir Evidencias
+
+    Route::post('/reporte/{id}/subirEvidencia', [ReporteController::class, 'subirEvidencia'])->name('reporte.subirEvidencia');
+
+    Route::delete('/reporte/{id}/evidencia/{index}', [ReporteController::class, 'eliminarEvidencia'])->name('reporte.eliminarEvidencia');
 
 
 
