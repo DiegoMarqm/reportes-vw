@@ -13,7 +13,7 @@ class Report extends Model
 
         'numFolio', //Este sera un numero de folio que tendran todos los reportes creados
 
-        //Campos que estaran en el formulario principañ
+        //Campos que estaran en el formulario principal
         'departamento', //Es un select con el valor del departamento
         'calificacion', //Solo podemos recibir un numero de 1 a 5
         'fechaQueja', //Introducir la fecha de la queja

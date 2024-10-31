@@ -325,4 +325,36 @@ class ReporteController extends Controller
 
         return back()->with('error', 'La evidencia no existe.');
     }
+
+    // Funcion para descargar las evidencias de la carpeta /evidencias/numFolio en formato zip
+    public function descargarEvidencias($id)
+    {
+        $reporte = Report::findOrFail($id);
+        $numFolio = $reporte->numFolio;
+        $evidencias = $reporte->evidenciasReporte;
+
+        $zip = new \ZipArchive();
+        $fileName = 'evidencias_reporte_' . $numFolio . '.zip';
+        $zip->open(storage_path($fileName), \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+
+        foreach ($evidencias as $evidencia) {
+            $rutaEvidencia = storage_path('app/public/' . $evidencia);
+            $nombreEvidencia = basename($evidencia);
+            $zip->addFile($rutaEvidencia, $nombreEvidencia);
+        }
+
+        $zip->close();
+
+        return response()->download(storage_path($fileName))->deleteFileAfterSend(true);
+    }
+
+    // Funcion para ver el pdf
+    public function verPdf($id)
+    {
+        $reporte = Report::findOrFail($id);
+        $pdf = $reporte->reportePDF;
+        $pdfPath = storage_path('app/public/' . $pdf);
+
+        return response()->file($pdfPath);
+    }
 }

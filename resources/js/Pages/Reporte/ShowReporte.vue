@@ -44,8 +44,7 @@ function eliminarPDF() {
 }
 
 
-//Aqui quiero hacer lo mismo pero 'evidenciasReporte' es un array y contendra imagenes, podemos
-
+//FUNCIONES PARA AGREGAR LAS EVIDENCIAS
 const formEvidencia = useForm({
     evidenciasReporte: [],
 });
@@ -95,6 +94,19 @@ function toggleStatus(id) {
 
 function generaPDF($id) {
     window.open(route('reporte.generarPDF', $id), '_blank');
+}
+
+
+//funcion para descargar las evidencias usando download de Storage
+// return Storage::download('file.jpg');
+// return Storage::download('file.jpg', $name, $headers);
+
+function descargarEvidencias() {
+    window.open(route('reporte.descargarEvidencias', props.reporte.id), '_blank');
+}
+
+function verPDF() {
+    window.open(route('reporte.verPDF', props.reporte.id), '_blank');
 }
 
 
@@ -286,95 +298,112 @@ const setActiveTab = (tab) => {
                         </div>
 
                         <div v-show="activeTab === 'evidencias'" class="space-y-8">
-    <div class="bg-yellow-50 p-6 rounded-lg shadow-lg">
-      <h3 class="text-2xl font-semibold text-yellow-800 mb-6 flex items-center">
-        <WrenchIcon class="w-6 h-6 mr-2" />
-        Evidencias
-      </h3>
+                            <div class="bg-yellow-50 p-6 rounded-lg shadow-lg">
+                                <h3 class="text-2xl font-semibold text-yellow-800 mb-6 flex items-center">
+                                    <WrenchIcon class="w-6 h-6 mr-2" />
+                                    Evidencias
+                                </h3>
 
-      <div class="space-y-6">
-        <div>
-          <h4 class="text-lg font-medium text-yellow-700 mb-4">Evidencias del Reporte</h4>
-          <!-- Template para mostrar las evidencias -->
-          <template v-if="props.reporte.evidenciasReporte && props.reporte.evidenciasReporte.length">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div v-for="(evidencia, index) in props.reporte.evidenciasReporte" :key="index"
-                   class="bg-white p-4 rounded-lg shadow-md transition duration-300 ease-in-out hover:shadow-xl">
-                <img :src="`/storage/${evidencia}`" alt="Evidencia del Reporte"
-                     class="w-full h-48 object-cover rounded-md mb-3">
-                <button @click="eliminarEvidencia(index)"
-                        class="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md transition duration-300 ease-in-out">
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          </template>
+                                <div class="space-y-6">
+                                    <div>
+                                        <h4 class="text-lg font-medium text-yellow-700 mb-4">Evidencias del Reporte</h4>
+                                        <!-- Template para mostrar las evidencias -->
+                                        <template
+                                            v-if="props.reporte.evidenciasReporte && props.reporte.evidenciasReporte.length">
+                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                <div v-for="(evidencia, index) in props.reporte.evidenciasReporte"
+                                                    :key="index"
+                                                    class="bg-white p-4 rounded-lg shadow-md transition duration-300 ease-in-out hover:shadow-xl">
+                                                    <img :src="`/storage/${evidencia}`" alt="Evidencia del Reporte"
+                                                        class="w-full h-48 object-cover rounded-md mb-3">
+                                                    <button @click="eliminarEvidencia(index)"
+                                                        class="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md transition duration-300 ease-in-out">
+                                                        Eliminar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </template>
 
-          <template v-else>
-            <p class="text-gray-600 italic">No hay evidencias guardadas.</p>
-          </template>
+                                        <template v-else>
+                                            <p class="text-gray-600 italic">No hay evidencias guardadas.</p>
+                                        </template>
 
-          <!-- Formulario para subir nuevas evidencias -->
-          <form @submit.prevent="subirEvidencia" enctype="multipart/form-data" class="mt-6">
-            <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
-              <label for="evidencia" class="w-full sm:w-auto flex-shrink-0 text-sm font-medium text-gray-700">
-                Subir nueva evidencia
-              </label>
-              <div class="w-full flex space-x-2">
-                <input type="file" id="evidencia" @change="onEvidenciaChange" accept="image/*"
-                       class="flex-grow text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100">
-                <button type="submit"
-                        class="flex-shrink-0 bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-md transition duration-300 ease-in-out">
-                  Subir
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
+                                        <!-- Formulario para subir nuevas evidencias -->
+                                        <form @submit.prevent="subirEvidencia" enctype="multipart/form-data"
+                                            class="mt-6">
+                                            <div
+                                                class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                                                <label for="evidencia"
+                                                    class="w-full sm:w-auto flex-shrink-0 text-sm font-medium text-gray-700">
+                                                    Subir nueva evidencia
+                                                </label>
+                                                <div class="w-full flex space-x-2">
+                                                    <input type="file" id="evidencia" @change="onEvidenciaChange"
+                                                        accept="image/*"
+                                                        class="flex-grow text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100">
+                                                    <button type="submit"
+                                                        class="flex-shrink-0 bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-md transition duration-300 ease-in-out">
+                                                        Subir
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
 
-        <div>
-          <h4 class="text-lg font-medium text-yellow-700 mb-4">Reporte PDF escaneado</h4>
+                                        <!-- Boton para descargar Evidencias -->
+                                        <button @click="descargarEvidencias"
+                                            class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-medium rounded-md transition duration-300 ease-in-out hover:bg-blue-700">
+                                            Descargar Evidencias
+                                        </button>
+                                    </div>
 
-          <!-- Si ya hay un archivo PDF guardado, muestra el archivo con opciones para descargar o eliminar -->
-          <div class="bg-white p-4 rounded-lg shadow-md">
-            <template v-if="props.reporte.reportePDF">
-              <p class="text-gray-700 mb-3">Archivo actual: {{ props.reporte.reportePDF }}</p>
-              <div class="flex space-x-3">
-                <a :href="`/storage/escaneo/${props.reporte.reportePDF}`"
-                   class="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-md transition duration-300 ease-in-out"
-                   download>
-                  Descargar PDF
-                </a>
-                <button @click="eliminarPDF"
-                        class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md transition duration-300 ease-in-out">
-                  Eliminar
-                </button>
-              </div>
-            </template>
-            <template v-else>
-              <p class="text-gray-600 italic mb-4">No hay archivo PDF guardado.</p>
-              <!-- Formulario para subir o reemplazar el archivo PDF -->
-              <form @submit.prevent="subirPDF">
-                <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                  <label for="reportePDF" class="w-full sm:w-auto flex-shrink-0 text-sm font-medium text-gray-700">
-                    Subir nuevo archivo PDF
-                  </label>
-                  <div class="w-full flex space-x-2">
-                    <input type="file" id="reportePDF" @change="onFileChange" accept=".pdf"
-                           class="flex-grow text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100">
-                    <button type="submit"
-                            class="flex-shrink-0 bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-md transition duration-300 ease-in-out">
-                      Subir
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </template>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+                                    <div>
+                                        <h4 class="text-lg font-medium text-yellow-700 mb-4">Reporte PDF escaneado</h4>
+
+                                        <!-- Si ya hay un archivo PDF guardado, muestra el archivo con opciones para descargar o eliminar -->
+                                        <div class="bg-white p-4 rounded-lg shadow-md">
+                                            <template v-if="props.reporte.reportePDF">
+                                                <p class="text-gray-700 mb-3">Archivo actual: {{
+                                                    props.reporte.reportePDF }}</p>
+                                                <div class="flex space-x-3">
+                                                    <!-- Boton para ver el PDF -->
+                                                    <button @click="verPDF"
+                                                        class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition duration-300 ease-in-out">
+                                                        Ver
+                                                    </button>
+
+                                                    <button @click="eliminarPDF"
+                                                        class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md transition duration-300 ease-in-out">
+                                                        Eliminar
+                                                    </button>
+                                                </div>
+                                            </template>
+                                            <template v-else>
+                                                <p class="text-gray-600 italic mb-4">No hay archivo PDF guardado.</p>
+                                                <!-- Formulario para subir o reemplazar el archivo PDF -->
+                                                <form @submit.prevent="subirPDF">
+                                                    <div
+                                                        class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                                                        <label for="reportePDF"
+                                                            class="w-full sm:w-auto flex-shrink-0 text-sm font-medium text-gray-700">
+                                                            Subir nuevo archivo PDF
+                                                        </label>
+                                                        <div class="w-full flex space-x-2">
+                                                            <input type="file" id="reportePDF" @change="onFileChange"
+                                                                accept=".pdf"
+                                                                class="flex-grow text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100">
+                                                            <button type="submit"
+                                                                class="flex-shrink-0 bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-md transition duration-300 ease-in-out">
+                                                                Subir
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
 
                         <!-- Historial -->
