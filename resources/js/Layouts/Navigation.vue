@@ -1,7 +1,7 @@
 <template>
     <aside class="z-20 hidden w-50 overflow-y-auto bg-white md:block flex-shrink-0">
         <div class="py-4 ">
-            <Link class="ml-6 text-lg hover:stroke-[rgb(0,176,240)] font-vwheadbold" :href="route('dashboard')">
+            <Link class="ml-6 text-lg font-vwheadbold" :style="{ color: isHovered ? 'rgb(0,176,240)' : 'rgb(0, 30, 80)' }" @mouseover="isHovered = true" @mouseleave="isHovered = false" :href="route('dashboard')">
             Autos de la Huasteca
             </Link>
 
@@ -53,7 +53,7 @@
                     </NavLink>
                 </li>
 
-                <li class="relative px-6 py-3">
+                <!-- <li class="relative px-6 py-3">
                     <NavLink :href="route('users.index')" :active="route().current('users.index')">
                         <template #icon>
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -79,9 +79,9 @@
                         </template>
                         About us
                     </NavLink>
-                </li>
+                </li> -->
 
-                <li class="relative px-6 py-3">
+                <!-- <li class="relative px-6 py-3">
                     <button @click="showingTwoLevelMenu = !showingTwoLevelMenu"
                         class="inline-flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
                         aria-haspopup="true">
@@ -105,7 +105,7 @@
                             <a class="w-full" href="#">Child menu</a>
                         </li>
                     </ul>
-                </li>
+                </li> -->
             </ul>
         </div>
     </aside>
@@ -125,8 +125,11 @@ export default {
     setup() {
         let showingTwoLevelMenu = ref(false)
 
+        const isHovered = ref(false);
+
         return {
-            showingTwoLevelMenu
+            showingTwoLevelMenu,
+            isHovered
         }
     },
 }

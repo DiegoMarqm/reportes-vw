@@ -50,7 +50,7 @@ return new class extends Migration
             $table->json('evidenciasReporte'); // Evidencias (array JSON de archivos)
             $table->string('reportePDF')->nullable(); // Archivo PDF del reporte
             $table->json('historialCambios'); // Historial de cambios (array JSON)
-            $table->boolean('estado'); // Estado del reporte (abierto/cerrado)
+            $table->boolean('estado'); // Estado del reporte (Activo = True / Inactivo = False)
             $table->timestamps(); // created_at y updated_at
 
         });

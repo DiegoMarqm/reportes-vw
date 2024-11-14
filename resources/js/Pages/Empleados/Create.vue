@@ -27,7 +27,7 @@ const add = () => {
         onSuccess: () => {
             form.reset();
             showModal.value = true;
-            
+
             setTimeout(() => {
                 showModal.value = false;
                 window.location.href = route('empleados.index');
@@ -45,7 +45,7 @@ const add = () => {
             Formulario Create
         </template>
 
-        <div class="p-4 space-y-8">
+        <div class="p-4 space-y-8 font-vwtext">
             <form @submit.prevent="add" class="bg-white rounded-lg shadow p-6">
                 <div class="mb-4">
                     <label for="nombre" class="block text-gray-700">Nombre</label>
@@ -77,7 +77,7 @@ const add = () => {
         <div v-if="showModal" class="fixed inset-0 flex items-center justify-center z-50">
             <div class="bg-white rounded-lg p-8 shadow-xl">
                 <div class="text-2xl font-bold mb-4 text-green-600">¡Éxito!</div>
-                <p class="text-gray-700">El formulario se ha enviado correctamente.</p>
+                <p class="text-gray-700">El empleado se ha añadido correctamente.</p>
             </div>
         </div>
     </AuthenticatedLayout>

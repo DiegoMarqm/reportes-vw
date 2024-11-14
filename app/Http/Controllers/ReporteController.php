@@ -188,7 +188,9 @@ class ReporteController extends Controller
             $reporte->estado = !$reporte->estado;
             $reporte->save();
 
-            return redirect()->route('reporte.index')->with('success', 'Cambio Exitoso');
+            // return redirect()->route('reporte.index')->with('success', 'Cambio Exitoso');
+            return redirect()->back()->with('success', 'Cambio Exitoso');
+
         } else {
             return redirect()->route('reporte.index')->with('error', 'Reporte no encontrado');
         }
@@ -198,9 +200,12 @@ class ReporteController extends Controller
     {
         // Buscar el reporte por su ID
         $reporte = Report::findOrFail($id);
+
         // Cargar una vista con los datos del reporte
         $pdf = Pdf::loadView('reportes.pdf', ['reporte' => $reporte])
-            ->setPaper('legal');
+            ->setPaper('legal')
+            ->setOption('isHtml5ParserEnabled', true);
+
         // Descargar el PDF con el nombre del archivo
 
         // return $pdf->download('reporte_' . $reporte->numFolio . '.pdf');

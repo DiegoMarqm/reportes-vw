@@ -1,8 +1,8 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
-import { ClipboardIcon, UserIcon, CarIcon, WrenchIcon, CheckCircleIcon, XCircleIcon, AlertTriangleIcon, CalendarIcon, HashIcon } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
+import { Info,ClipboardIcon, UserIcon, CarIcon, WrenchIcon, CheckCircleIcon, XCircleIcon, AlertTriangleIcon, CalendarIcon, HashIcon, FolderSearch, FileClock, Loader} from 'lucide-vue-next';
 
 
 
@@ -92,14 +92,9 @@ function toggleStatus(id) {
     });
 }
 
-function generaPDF($id) {
+function generarPDF($id) {
     window.open(route('reporte.generarPDF', $id), '_blank');
 }
-
-
-//funcion para descargar las evidencias usando download de Storage
-// return Storage::download('file.jpg');
-// return Storage::download('file.jpg', $name, $headers);
 
 function descargarEvidencias() {
     window.open(route('reporte.descargarEvidencias', props.reporte.id), '_blank');
@@ -112,10 +107,59 @@ function verPDF() {
 
 
 const activeTab = ref('general');
+const isLoading = ref(false);
 
 const setActiveTab = (tab) => {
+    isLoading.value = true;
     activeTab.value = tab;
+    // Simulate loading delay
+    setTimeout(() => {
+        isLoading.value = false;
+    }, 250);
 };
+
+// const setActiveTab = (tab) => {
+//     activeTab.value = tab;
+// };
+
+
+const currentPage = ref(1);
+const itemsPerPage = 10;
+
+const totalPages = computed(() => {
+    return Math.ceil(props.reporte.historialCambios.length / itemsPerPage);
+});
+
+const paginatedHistorialCambios = computed(() => {
+    const reversedHistorial = [...props.reporte.historialCambios].reverse();
+    const start = (currentPage.value - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return reversedHistorial.slice(start, end);
+});
+
+function formatDate(date) {
+    return new Date(date).toLocaleString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function prevPage() {
+    if (currentPage.value > 1) {
+        currentPage.value--;
+    }
+}
+
+function nextPage() {
+    if (currentPage.value < totalPages.value) {
+        currentPage.value++;
+    }
+}
+
+
 </script>
 
 <template>
@@ -124,20 +168,23 @@ const setActiveTab = (tab) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight flex items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight flex items-center font-vwheadbold ml-8"
+                style="color: rgb(0, 30, 80);">
                 <ClipboardIcon class="w-6 h-6 mr-2" />
                 Reporte: No. Folio - {{ props.reporte.numFolio }}
             </h2>
         </template>
 
-        <div class="py-12">
+        <div class="pb-12 pt-4 font-vwtext">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="bg-white shadow-xl rounded-lg overflow-hidden">
-                    <div class="p-6 space-y-6">
+                    <div class="p-6 space-y-1">
                         <!-- Tabs para navegación en móviles -->
                         <div class="sm:hidden">
                             <select v-model="activeTab"
-                                class="block w-full rounded-md border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                @change="setActiveTab(activeTab)"
+                                class="block w-full rounded-md border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                style="color: rgb(0, 30, 80);">
                                 <option value="general">General</option>
                                 <option value="cliente">Cliente</option>
                                 <option value="vehiculo">Vehículo</option>
@@ -152,7 +199,7 @@ const setActiveTab = (tab) => {
                         <div class="hidden sm:block">
                             <div class="border-b border-gray-200">
                                 <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                                    <a v-for="tab in ['general', 'cliente', 'vehiculo', 'reclamacion', 'resolucion', 'evidencias', 'historial']"
+                                    <a v-for="tab in ['general', 'cliente', 'vehiculo', 'reclamación', 'resolución', 'evidencias', 'historial']"
                                         :key="tab" @click.prevent="setActiveTab(tab)"
                                         :class="[activeTab === tab ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm cursor-pointer']">
                                         {{ tab.charAt(0).toUpperCase() + tab.slice(1) }}
@@ -161,11 +208,17 @@ const setActiveTab = (tab) => {
                             </div>
                         </div>
 
+                        <div v-if="isLoading" class="flex justify-center items-center h-64">
+                            <Loader class="animate-spin h-8 w-8 text-vw-blue-500" />
+                            <span class="ml-2 text-vw-blue-700">Cargando...</span>
+                        </div>
+
+                        <div v-else>
                         <!-- Contenido de las pestañas -->
                         <div v-show="activeTab === 'general'" class="space-y-4">
                             <div class="bg-blue-50 p-4 rounded-lg shadow">
-                                <h3 class="text-lg font-semibold text-blue-800 mb-4 flex items-center">
-                                    <HashIcon class="w-5 h-5 mr-2" />
+                                <h3 class="text-lg font-semibold mb-4 flex items-center" style="color: rgb(0, 30, 80);">
+                                    <Info class="w-5 h-5 mr-2" />
                                     Información General
                                 </h3>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -228,7 +281,7 @@ const setActiveTab = (tab) => {
                             </div>
                         </div>
 
-                        <div v-show="activeTab === 'reclamacion'" class="space-y-4">
+                        <div v-show="activeTab === 'reclamación'" class="space-y-4">
                             <div class="bg-red-50 p-4 rounded-lg shadow">
                                 <h3 class="text-lg font-semibold text-red-800 mb-4 flex items-center">
                                     <AlertTriangleIcon class="w-5 h-5 mr-2" />
@@ -271,7 +324,7 @@ const setActiveTab = (tab) => {
                             </div>
                         </div>
 
-                        <div v-show="activeTab === 'resolucion'" class="space-y-4">
+                        <div v-show="activeTab === 'resolución'" class="space-y-4">
                             <div class="bg-purple-50 p-4 rounded-lg shadow">
                                 <h3 class="text-lg font-semibold text-purple-800 mb-4 flex items-center">
                                     <CheckCircleIcon class="w-5 h-5 mr-2" />
@@ -300,7 +353,7 @@ const setActiveTab = (tab) => {
                         <div v-show="activeTab === 'evidencias'" class="space-y-8">
                             <div class="bg-yellow-50 p-6 rounded-lg shadow-lg">
                                 <h3 class="text-2xl font-semibold text-yellow-800 mb-6 flex items-center">
-                                    <WrenchIcon class="w-6 h-6 mr-2" />
+                                    <FolderSearch class="w-6 h-6 mr-2" />
                                     Evidencias
                                 </h3>
 
@@ -316,7 +369,8 @@ const setActiveTab = (tab) => {
                                                     class="bg-white p-4 rounded-lg shadow-md transition duration-300 ease-in-out hover:shadow-xl">
                                                     <img :src="`/storage/${evidencia}`" alt="Evidencia del Reporte"
                                                         class="w-full h-48 object-cover rounded-md mb-3">
-                                                    <button @click="eliminarEvidencia(index)"
+                                                    <button v-if="props.reporte.estado"
+                                                        @click="eliminarEvidencia(index)"
                                                         class="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md transition duration-300 ease-in-out">
                                                         Eliminar
                                                     </button>
@@ -329,8 +383,8 @@ const setActiveTab = (tab) => {
                                         </template>
 
                                         <!-- Formulario para subir nuevas evidencias -->
-                                        <form @submit.prevent="subirEvidencia" enctype="multipart/form-data"
-                                            class="mt-6">
+                                        <form v-if="props.reporte.estado" @submit.prevent="subirEvidencia"
+                                            enctype="multipart/form-data" class="mt-6 bg-white p-5">
                                             <div
                                                 class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
                                                 <label for="evidencia"
@@ -351,7 +405,7 @@ const setActiveTab = (tab) => {
 
                                         <!-- Boton para descargar Evidencias -->
                                         <button @click="descargarEvidencias"
-                                            class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-medium rounded-md transition duration-300 ease-in-out hover:bg-blue-700">
+                                            class="inline-flex items-center justify-center px-4 py-2 my-4 bg-blue-600 text-white font-medium rounded-md transition duration-300 ease-in-out hover:bg-blue-700">
                                             Descargar Evidencias
                                         </button>
                                     </div>
@@ -371,7 +425,7 @@ const setActiveTab = (tab) => {
                                                         Ver
                                                     </button>
 
-                                                    <button @click="eliminarPDF"
+                                                    <button v-if="props.reporte.estado" @click="eliminarPDF"
                                                         class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md transition duration-300 ease-in-out">
                                                         Eliminar
                                                     </button>
@@ -405,51 +459,62 @@ const setActiveTab = (tab) => {
                             </div>
                         </div>
 
+                        <div v-show="activeTab === 'historial'" class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div class="bg-vw-blue-100 p-4 sm:p-6 rounded-lg shadow-lg">
+                                <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
+                                    <h3 class="text-xl font-bold text-vw-blue-900 flex items-center mb-2 sm:mb-0">
+                                        <FileClock class="w-6 h-6 mr-2 text-vw-blue-700" />
+                                        Historial
+                                    </h3>
+                                    <span class="text-sm font-medium text-vw-blue-700">
+                                        Página {{ currentPage }} de {{ totalPages }}
+                                    </span>
+                                </div>
 
-                        <!-- Historial -->
-                        <div v-show="activeTab === 'historial'" class="space-y-4">
-                            <div class="bg-yellow-50 p-4 rounded-lg shadow">
-                                <h3 class="text-lg font-semibold text-yellow-800 mb-4 flex items-center">
-                                    <WrenchIcon class="w-5 h-5 mr-2" />
-                                    Historial
-                                </h3>
-                                <div class="space-y-2">
-                                    <div v-for="(historial, index) in props.reporte.historialCambios" :key="index">
-                                        <!--
-                                        <p v-for="(cambios, cambiosIndex) in historial.cambios" :key="cambiosIndex">{{ cambios.descricion }}</p> -->
-
+                                <div class="space-y-2 mb-4 max-h-96 overflow-y-auto">
+                                    <div v-for="(historial, index) in paginatedHistorialCambios" :key="index"
+                                        class="bg-white bg-opacity-80 p-3 rounded-md shadow-sm">
                                         <div v-for="(cambio, cambioIndex) in historial.cambios" :key="cambioIndex"
-                                            class="flex items-center">
-                                            <!-- <p class="font-medium text-yellow-700 mr-2">Campo:</p>
-                                            <p class="text-yellow-900">{{ cambio.campo || 'N/A' }}</p> -->
-                                            <p class="font-medium text-yellow-700 mr-2 ml-4">Fecha:</p>
-                                            <p class="text-yellow-900">{{ new Date(cambio.fecha).toLocaleString('es-ES',
-                                                {
-                                                    day:
-                                                        '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute:
-                                                        '2-digit'
-                                                }) || 'N/A' }}</p>
-                                            <p class="font-medium text-yellow-700 mr-2 ml-4">Descripcion:</p>
-                                            <p class="text-yellow-900">{{ cambio.descripcion || 'N/A' }}</p>
+                                            class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                                            <div class="flex items-center">
+                                                <span class="font-medium text-vw-blue-700 mr-2">Fecha:</span>
+                                                <span class="text-vw-blue-900">{{ formatDate(cambio.fecha) || 'N/A'
+                                                    }}</span>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <span class="font-medium text-vw-blue-700 mr-2">Descripción:</span>
+                                                <span class="text-vw-blue-900">{{ cambio.descripcion || 'N/A' }}</span>
+                                            </div>
                                         </div>
                                     </div>
+                                </div>
 
-
-                                    <!-- <p v-for="(value, key) in {
-                                        'Historial': props.reporte.historialCambios
-                                        // 'Tipo de Reclamación': props.reporte.tipoReclamacion,
-                                        // 'Otro Tipo de Reclamación': props.reporte.otroTipoReclamacion
-                                    }" :key="key" class="flex items-center">
-                                        <span class="font-medium text-red-700 mr-2">{{ key }}:</span>
-                                        <span class="text-red-900">{{ value || 'N/A' }}</span>
-                                    </p> -->
-
-
+                                <div class="flex justify-center space-x-2">
+                                    <button @click="prevPage" :disabled="currentPage === 1"
+                                        class="px-3 py-1 text-sm rounded transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-vw-blue-500"
+                                        :class="currentPage === 1 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-vw-blue-500 text-white hover:bg-vw-blue-600'">
+                                        Anterior
+                                    </button>
+                                    <button @click="currentPage = 1" :disabled="currentPage === 1"
+                                        class="p-1 rounded transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-vw-blue-500"
+                                        :class="currentPage === 1 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-vw-blue-500 text-white hover:bg-vw-blue-600'">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round"
+                                            class="lucide lucide-rotate-ccw">
+                                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                                            <path d="M3 3v5h5" />
+                                        </svg>
+                                    </button>
+                                    <button @click="nextPage" :disabled="currentPage === totalPages"
+                                        class="px-3 py-1 text-sm rounded transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-vw-blue-500"
+                                        :class="currentPage === totalPages ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-vw-blue-500 text-white hover:bg-vw-blue-600'">
+                                        Siguiente
+                                    </button>
                                 </div>
                             </div>
                         </div>
-
-
+                    </div>
 
                         <!-- Estado y Acciones -->
                         <div
@@ -465,22 +530,25 @@ const setActiveTab = (tab) => {
                             <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
 
                                 <!-- //Link para ir a  -->
-                                <Link :href="route('reporte.edit', props.reporte.id)"
-                                    class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white">
+                                <Link v-if="props.reporte.estado" :href="route('reporte.edit', props.reporte.id)"
+                                    class="inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white border border-transparent rounded-md font-semibold text-xs  uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring focus:ring-green-300 disabled:opacity-25 transition">
                                 Editar
                                 </Link>
+
+                                <!-- <button v-if="infoReporte.estado"
+                                            class="text-vw-lake-blue hover:text-vw-dark-blue mr-2">Editar</button> -->
                             </div>
 
                             <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
 
-                                <button @click="generaPDF(props.reporte.id)"
-                                    class="inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white">
+                                <button @click="generarPDF(props.reporte.id)"
+                                    class="inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white border border-transparent rounded-md font-semibold text-xs  uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring focus:ring-green-300 disabled:opacity-25 transition">
                                     Descargar PDF
                                 </button>
 
-                                <button @click="toggleStatus(props.reporte.id)"
+                                <button v-if="props.reporte.estado === true" @click="toggleStatus(props.reporte.id)"
                                     class="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:border-indigo-900 focus:ring focus:ring-indigo-300 disabled:opacity-25 transition">
-                                    Cambiar Estado
+                                    Finalizar Reporte
                                 </button>
                                 <Link :href="route('reporte.index')"
                                     class="inline-flex items-center justify-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring focus:ring-gray-300 disabled:opacity-25 transition">
@@ -495,6 +563,37 @@ const setActiveTab = (tab) => {
     </AuthenticatedLayout>
 </template>
 
-<style scoped>
-/* Estilos adicionales si son necesarios */
+
+<style>
+:root {
+    --vw-blue-100: #e6f0ff;
+    --vw-blue-500: #0066b2;
+    --vw-blue-600: #005091;
+    --vw-blue-700: #003d70;
+    --vw-blue-900: #001f3f;
+}
+
+.bg-vw-blue-100 {
+    background-color: var(--vw-blue-100);
+}
+
+.bg-vw-blue-500 {
+    background-color: var(--vw-blue-500);
+}
+
+.text-vw-blue-700 {
+    color: var(--vw-blue-700);
+}
+
+.text-vw-blue-900 {
+    color: var(--vw-blue-900);
+}
+
+.hover\:bg-vw-blue-600:hover {
+    background-color: var(--vw-blue-600);
+}
+
+.focus\:ring-vw-blue-500:focus {
+    --tw-ring-color: var(--vw-blue-500);
+}
 </style>

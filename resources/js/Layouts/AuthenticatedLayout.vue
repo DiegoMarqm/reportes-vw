@@ -9,7 +9,7 @@
 
         <main class="h-full overflow-y-auto">
           <div class="container px-6 mx-auto grid">
-            <h2 class="my-6 text-2xl font-semibold ">
+            <h2 class="my-2 text-2xl font-semibold ">
               <slot name="header" />
             </h2>
 

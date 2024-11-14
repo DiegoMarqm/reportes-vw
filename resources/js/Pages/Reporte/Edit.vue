@@ -134,7 +134,7 @@ console.log(props.empleados);
             Formulario Reportes
         </template>
 
-        <div class="p-4 space-y-8">
+        <div class="p-4 space-y-8 font-vwtext">
             <form @submit.prevent="add" class="bg-white rounded-lg shadow p-6 space-y-6">
 
                 <!-- Número de Folio -->

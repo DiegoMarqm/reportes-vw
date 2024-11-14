@@ -9,25 +9,18 @@ use Inertia\Inertia;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\ReporteController;
 
-// Route::get('/', function () {
-//     return Inertia::render('Welcome', [
-//         'canLogin' => Route::has('login'),
-//         'canRegister' => Route::has('register'),
-//         'laravelVersion' => Application::VERSION,
-//         'phpVersion' => PHP_VERSION,
-//     ]);
-// });
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
 });
 
-Route::get('/dashboard', [EmpleadoController::class, 'getEmpleadosPorRol'])
+Route::get('/dashboard', [EmpleadoController::class, 'datosgrafica'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
 
 Route::middleware('auth')->group(function () {
+
     Route::get('/about', fn() => Inertia::render('About'))->name('about');
 
     Route::get('/form', fn() => Inertia::render('Formulario'))->name('form');
@@ -50,7 +43,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/reporte/{infoReporte}', [ReporteController::class, 'showReporte'])->name('reporte.show');
     Route::post('reporte/{infoReporte}/toggle-status', [ReporteController::class, 'toogleEstado'])->name('reporte.toggleEstado');
-    Route::get('/reporte/{id}/pdf', [ReporteController::class, 'generarPDF'])->name('reporte.generarPDF');
+    Route::get('/reporte/{id}/descargar', [ReporteController::class, 'generarPDF'])->name('reporte.generarPDF');
     Route::post('/reporte/{id}/subirPDF', [ReporteController::class, 'subirPDF'])->name('reporte.subirPDF');
     Route::delete('/reporte/{id}/eliminarPDF', [ReporteController::class, 'eliminarPDF'])->name('reporte.eliminarPDF');
 

@@ -10,12 +10,10 @@ const props = defineProps({
     }
 });
 
-//obtener el nombre de los asesores
 const asesores = computed(() => {
     return props.empleados.filter(empleado => empleado.rol === 'Asesor');
 });
 
-//obtener el nombre de los tecnicos
 const tecnicos = computed(() => {
     return props.empleados.filter(empleado => empleado.rol === 'Tecnico');
 });
@@ -24,29 +22,29 @@ const tecnicos = computed(() => {
 
 // Inicializamos el formulario con los campos adicionales
 const form = useForm({
-    numFolio: '',              //Campo Numero de Folio
-    departamento: '',        // Campo Departamento
-    calificacion: '',         // Campo Calificación
-    fechaQueja: '',           // Campo Fecha de la queja
-    fechaEntrega: '',         // Campo Fecha de entrega de la unidad puede estar vacio
-    fechaIngreso: '',          // Campo Fecha de ingreso puede estar vacio
-    formaDeteccion: '',       // Campo Forma que se detectó la queja
-    redSocial: '',            // Campo Red social puede ir vacio
-    nomCliente: '',        // Campo Nombre del Cliente
-    celularCliente: '',       // Campo Celular
-    emailCliente: '',         // Campo E-mail
-    asesor: '',               // Campo Asesor/Ejecutivo
-    tipoModelo: '',           // Campo Tipo/Modelo
-    placas: '',               // Campo Placas puede ir vacio
-    color: '',                // Campo Color
-    noOrden: '',              // Campo No. Orden
-    vin: '',                  // Campo No. de VIN
-    tecnico: '',              // Campo Técnico
-    reclamacion: '',          // Campo Reclamación
-    tipoReclamacion: '',      // Campo Tipo de reclamación
-    otroTipoReclamacion: '',  //Campo de Otro tipo de reclamacion puede ir vacio
+    numFolio: '',
+    departamento: '',
+    calificacion: '',
+    fechaQueja: '',
+    fechaEntrega: '',
+    fechaIngreso: '',
+    formaDeteccion: '',
+    redSocial: '',
+    nomCliente: '',
+    celularCliente: '',
+    emailCliente: '',
+    asesor: '',
+    tipoModelo: '',
+    placas: '',
+    color: '',
+    noOrden: '',
+    vin: '',
+    tecnico: '',
+    reclamacion: '',
+    tipoReclamacion: '',
+    otroTipoReclamacion: '',
 
-    // Causa Raiz va a ser un Array en el modelo y en la migracionesta indicado como tipo json y puede ir nulo o no
+
     causaRaiz: {
         personas: '',
         proceso: '',
@@ -58,21 +56,19 @@ const form = useForm({
 
     medidas: [],
 
-    procedeQueja: false,         // Campo Procede la queja boleano
-    solucion: '',             // Campo Solución es un text
-    nombreCierre: '',         // Campo Nombre del personal de cierre es un select
-    fechaCierre: '',          // Campo Fecha de cierre es un date
-    nombreSeguimiento: '',    //Campo Nombre del personal que hace el seguimiento
-    fechaSeguimiento: '',    //Campo fecha dek seguimiento
-    comentariosCliente: '',  //Campo de comentarios del cliente
+    procedeQueja: false,
+    solucion: '',
+    nombreCierre: '',
+    fechaCierre: '',
+    nombreSeguimiento: '',
+    fechaSeguimiento: '',
+    comentariosCliente: '',
 
 });
 
 
-// Estado para controlar la visibilidad del modal
 const showModal = ref(false);
 
-// Función para agregar una medida
 const agregarMedida = () => {
     form.medidas.push({
         medida: '',
@@ -81,7 +77,6 @@ const agregarMedida = () => {
     });
 };
 
-// Función para eliminar una medida
 const removeMedida = (index) => {
     form.medidas.splice(index, 1);
 };
@@ -112,10 +107,10 @@ const add = () => {
 
     });
 };
-
-
-//ver la informacion del objeto empleados
-console.log(props.empleados);
+const limpiarFormulario = () => {
+    form.reset();
+    // window.location.reload();
+};
 
 </script>
 
@@ -128,15 +123,15 @@ console.log(props.empleados);
             Formulario Reportes
         </template>
 
-        <div class="p-4 space-y-8">
-            <form @submit.prevent="add" class="bg-white rounded-lg shadow p-6 space-y-6">
+        <div class="p-4 space-y-8 font-vwtext">
+            <form @submit.prevent="add" class="bg-white rounded-lg shadow p-6 space-y-6 font-vwtext">
 
                 <!-- Número de Folio -->
                 <div>
                     <label for="numFolio" class="block text-gray-700">Número de Folio</label>
                     <input type="text" v-model="form.numFolio" id="numFolio" name="numFolio"
                         class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                        placeholder="Ej. 123456">
+                        placeholder="Num. Folio Reporte">
                     <span v-if="form.errors.numFolio" class="text-red-500 text-sm">{{ form.errors.numFolio }}</span>
                 </div>
 
@@ -635,16 +630,20 @@ console.log(props.empleados);
 
                 <!-- Botones -->
                 <div class="flex justify-end">
+
                     <Link :href="route('reporte.index')"
                         class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 mr-2">Cancelar
                     </Link>
 
                     <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Enviar
                     </button>
-
-
                 </div>
             </form>
+            <!-- Boton para limpiar el fomulario -->
+            <button @click="limpiarFormulario()"
+                class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700">Limpiar
+                formulario</button>
+
         </div>
 
         <!-- Modal de éxito -->
@@ -663,6 +662,9 @@ console.log(props.empleados);
 </template>
 
 <style scoped>
+
+
+
 .fixed {
     position: fixed;
     top: 0;

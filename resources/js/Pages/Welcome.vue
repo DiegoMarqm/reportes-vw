@@ -67,7 +67,7 @@ onMounted(() => {
     <GuestLayout>
 
         <Head title="Login"></Head>
-        <div class="flex flex-col overflow-y-auto md:flex-row ">
+        <div class="flex flex-col overflow-y-auto md:flex-row font-vwtext">
             <div class="h-44 md:h-auto md:w-1/2">
 				<img aria-hidden="true" class="object-cover w-full h-full" src="https://vw-huasteca.com.mx/Assets/ModelosNuevos/PortaHome/web_1920x720.jpg" alt="Office" />
 			</div>
