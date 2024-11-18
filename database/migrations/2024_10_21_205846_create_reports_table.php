@@ -35,14 +35,14 @@ return new class extends Migration
             $table->text('reclamacion'); // Texto de la reclamación
             $table->string('tipoReclamacion'); // Tipo de reclamación (select)
             $table->string('otroTipoReclamacion')->nullable(); // Otro tipo de reclamación, puede ser nulo
-            $table->json('causaRaiz'); // Causa raíz (array JSON)
+            $table->json('causaRaiz')->nullable(); // Causa raíz (array JSON)
             $table->json('medidas'); // Medidas (array JSON)
             $table->boolean('procedeQueja')->index(); // Si procede la queja o no (boolean)
-            $table->text('solucion'); // Texto con la solución del reporte
-            $table->string('nombreCierre'); // Nombre del personal que cerró la reclamación
-            $table->date('fechaCierre')->index(); // Fecha de cierre de la reclamación
-            $table->string('nombreSeguimiento'); // Nombre del personal de seguimiento
-            $table->date('fechaSeguimiento'); // Fecha del seguimiento
+            $table->text('solucion')->nullable(); // Texto con la solución del reporte
+            $table->string('nombreCierre')->nullable(); // Nombre del personal que cerró la reclamación
+            $table->date('fechaCierre')->index()->nullable(); // Fecha de cierre de la reclamación
+            $table->string('nombreSeguimiento')->nullable(); // Nombre del personal de seguimiento
+            $table->date('fechaSeguimiento')->nullable(); // Fecha del seguimiento
             $table->text('comentariosCliente')->nullable(); // Comentarios del cliente, puede ser nulo
 
 

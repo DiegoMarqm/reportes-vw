@@ -42,7 +42,7 @@ const add = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            Formulario Create
+            Formulario Empleados
         </template>
 
         <div class="p-4 space-y-8 font-vwtext">

@@ -529,104 +529,105 @@ const limpiarFormulario = () => {
                     </span>
                 </div>
 
-                <!-- Sección: ¿Qué solución se le dio al cliente? -->
-                <div class="mb-4">
-                    <label class="block text-gray-700">¿Qué solución se le dio al cliente?</label>
-                    <textarea v-model="form.solucion" id="solucion" name="solucion" rows="4" maxlength="1200"
-                        class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                        placeholder="Describe la solución dada al cliente (máximo 200 palabras)"></textarea>
-                    <span class="text-gray-500 text-sm">
-                        (Máximo 200 palabras)
-                    </span>
-                    <!-- Mostrar errores si los hay -->
-                    <span v-if="form.errors.solucion" class="text-red-500 text-sm mt-2">
-                        {{ form.errors.solucion }}
-                    </span>
-                </div>
-
-
-                <!-- Sección: Personal que cerró la reclamación -->
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-center">Personal que cerró la reclamación</label>
-
-                    <div class="flex flex-col lg:flex-row lg:justify-center lg:space-x-4 mt-2">
-                        <!-- Nombre -->
-                        <div class="lg:w-1/2">
-                            <label for="nombreCierre" class="block text-gray-700">Nombre</label>
-                            <select v-model="form.nombreCierre" id="nombreCierre" name="nombreCierre"
-                                class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                <option value="" disabled selected>Seleccionar...</option>
-                                <!-- Ciclo para obtener los empleados -->
-                                <option v-for="empleado in empleados" :key="empleado.id" :value="empleado.nombre">
-                                    {{ empleado.nombre }}
-                                </option>
-                            </select>
-                        </div>
-
-                        <!-- Fecha -->
-                        <div class="lg:w-1/2 mt-4 lg:mt-0">
-                            <label for="fechaCierre" class="block text-gray-700">Fecha</label>
-                            <input type="date" v-model="form.fechaCierre" id="fechaCierre" name="fechaCierre"
-                                class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                        </div>
+                <div v-if="form.procedeQueja">
+                    <!-- Sección: ¿Qué solución se le dio al cliente? -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700">¿Qué solución se le dio al cliente?</label>
+                        <textarea v-model="form.solucion" id="solucion" name="solucion" rows="4" maxlength="1200"
+                            class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                            placeholder="Describe la solución dada al cliente (máximo 200 palabras)"></textarea>
+                        <span class="text-gray-500 text-sm">
+                            (Máximo 200 palabras)
+                        </span>
+                        <!-- Mostrar errores si los hay -->
+                        <span v-if="form.errors.solucion" class="text-red-500 text-sm mt-2">
+                            {{ form.errors.solucion }}
+                        </span>
                     </div>
 
-                    <!-- Mostrar errores si los hay -->
-                    <span v-if="form.errors.nombreCierre || form.errors.fechaCierre" class="text-red-500 text-sm mt-2">
-                        {{ form.errors.nombreCierre || form.errors.fechaCierre }}
-                    </span>
-                </div>
 
+                    <!-- Sección: Personal que cerró la reclamación -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-center">Personal que cerró la reclamación</label>
 
-                <!-- Sección: Personal que realizó contacto de seguimiento -->
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-center">Personal que realizó contacto de seguimiento</label>
+                        <div class="flex flex-col lg:flex-row lg:justify-center lg:space-x-4 mt-2">
+                            <!-- Nombre -->
+                            <div class="lg:w-1/2">
+                                <label for="nombreCierre" class="block text-gray-700">Nombre</label>
+                                <select v-model="form.nombreCierre" id="nombreCierre" name="nombreCierre"
+                                    class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                    <option value="" disabled selected>Seleccionar...</option>
+                                    <!-- Ciclo para obtener los empleados -->
+                                    <option v-for="empleado in empleados" :key="empleado.id" :value="empleado.nombre">
+                                        {{ empleado.nombre }}
+                                    </option>
+                                </select>
+                            </div>
 
-                    <div class="flex flex-col lg:flex-row lg:justify-center lg:space-x-4 mt-2">
-                        <!-- Nombre -->
-                        <div class="lg:w-1/2">
-                            <label for="nombreSeguimiento" class="block text-gray-700">Nombre</label>
-                            <select v-model="form.nombreSeguimiento" id="nombreSeguimiento" name="nombreSeguimiento"
-                                class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                <option value="" disabled selected>Seleccionar...</option>
-                                <!-- Ciclo para obtener los empleados -->
-                                <option v-for="empleado in empleados" :key="empleado.id" :value="empleado.nombre">
-                                    {{ empleado.nombre }}
-                                </option>
-                            </select>
+                            <!-- Fecha -->
+                            <div class="lg:w-1/2 mt-4 lg:mt-0">
+                                <label for="fechaCierre" class="block text-gray-700">Fecha</label>
+                                <input type="date" v-model="form.fechaCierre" id="fechaCierre" name="fechaCierre"
+                                    class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            </div>
                         </div>
 
-                        <!-- Fecha -->
-                        <div class="lg:w-1/2 mt-4 lg:mt-0">
-                            <label for="fechaSeguimiento" class="block text-gray-700">Fecha</label>
-                            <input type="date" v-model="form.fechaSeguimiento" id="fechaSeguimiento"
-                                name="fechaSeguimiento"
-                                class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                        </div>
+                        <!-- Mostrar errores si los hay -->
+                        <span v-if="form.errors.nombreCierre || form.errors.fechaCierre"
+                            class="text-red-500 text-sm mt-2">
+                            {{ form.errors.nombreCierre || form.errors.fechaCierre }}
+                        </span>
                     </div>
 
-                    <!-- Mostrar errores si los hay -->
-                    <span v-if="form.errors.nombreSeguimiento || form.errors.fechaSeguimiento"
-                        class="text-red-500 text-sm mt-2">
-                        {{ form.errors.nombreSeguimiento || form.errors.fechaSeguimiento }}
-                    </span>
+                    <!-- Sección: Personal que realizó contacto de seguimiento -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-center">Personal que realizó contacto de
+                            seguimiento</label>
+
+                        <div class="flex flex-col lg:flex-row lg:justify-center lg:space-x-4 mt-2">
+                            <!-- Nombre -->
+                            <div class="lg:w-1/2">
+                                <label for="nombreSeguimiento" class="block text-gray-700">Nombre</label>
+                                <select v-model="form.nombreSeguimiento" id="nombreSeguimiento" name="nombreSeguimiento"
+                                    class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                    <option value="" disabled selected>Seleccionar...</option>
+                                    <!-- Ciclo para obtener los empleados -->
+                                    <option v-for="empleado in empleados" :key="empleado.id" :value="empleado.nombre">
+                                        {{ empleado.nombre }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Fecha -->
+                            <div class="lg:w-1/2 mt-4 lg:mt-0">
+                                <label for="fechaSeguimiento" class="block text-gray-700">Fecha</label>
+                                <input type="date" v-model="form.fechaSeguimiento" id="fechaSeguimiento"
+                                    name="fechaSeguimiento"
+                                    class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            </div>
+                        </div>
+
+                        <!-- Mostrar errores si los hay -->
+                        <span v-if="form.errors.nombreSeguimiento || form.errors.fechaSeguimiento"
+                            class="text-red-500 text-sm mt-2">
+                            {{ form.errors.nombreSeguimiento || form.errors.fechaSeguimiento }}
+                        </span>
+                    </div>
+
+                    <!-- Sección: Comentarios del cliente -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700">Comentarios del cliente</label>
+                        <textarea v-model="form.comentariosCliente" id="comentariosCliente" name="comentariosCliente"
+                            rows="4"
+                            class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                            placeholder="Escriba los comentarios del cliente aquí..."></textarea>
+
+                        <!-- Mostrar errores si los hay -->
+                        <span v-if="form.errors.comentariosCliente" class="text-red-500 text-sm mt-2">
+                            {{ form.errors.comentariosCliente }}
+                        </span>
+                    </div>
                 </div>
-
-
-                <!-- Sección: Comentarios del cliente -->
-                <div class="mb-4">
-                    <label class="block text-gray-700">Comentarios del cliente</label>
-                    <textarea v-model="form.comentariosCliente" id="comentariosCliente" name="comentariosCliente"
-                        rows="4"
-                        class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                        placeholder="Escriba los comentarios del cliente aquí..."></textarea>
-
-                    <!-- Mostrar errores si los hay -->
-                    <span v-if="form.errors.comentariosCliente" class="text-red-500 text-sm mt-2">
-                        {{ form.errors.comentariosCliente }}
-                    </span>
-                </div>
-
 
                 <!-- Botones -->
                 <div class="flex justify-end">
@@ -662,9 +663,6 @@ const limpiarFormulario = () => {
 </template>
 
 <style scoped>
-
-
-
 .fixed {
     position: fixed;
     top: 0;

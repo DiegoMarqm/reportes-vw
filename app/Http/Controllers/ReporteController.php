@@ -73,12 +73,12 @@ class ReporteController extends Controller
             'medidas.*.responsable' => 'required|string',
             'medidas.*.fecha' => 'required|date',
             'procedeQueja' => 'required|boolean',
-            'solucion' => 'required|string',
-            'nombreCierre' => 'required|string',
-            'fechaCierre' => 'required|date',
-            'nombreSeguimiento' => 'required|string',
-            'fechaSeguimiento' => 'required|date',
-            'comentariosCliente' => 'required|string',
+            'solucion' => 'nullable|string',
+            'nombreCierre' => 'nullable|string',
+            'fechaCierre' => 'nullable|date',
+            'nombreSeguimiento' => 'nullable|string',
+            'fechaSeguimiento' => 'nullable|date',
+            'comentariosCliente' => 'nullable|string',
             //Otros campos extras
 
             'evidenciasReporte' => 'nullable|array',
@@ -148,12 +148,12 @@ class ReporteController extends Controller
                 'medidas.*.responsable' => 'required|string',
                 'medidas.*.fecha' => 'required|date',
                 'procedeQueja' => 'required|boolean',
-                'solucion' => 'required|string',
-                'nombreCierre' => 'required|string',
-                'fechaCierre' => 'required|date',
-                'nombreSeguimiento' => 'required|string',
-                'fechaSeguimiento' => 'required|date',
-                'comentariosCliente' => 'required|string',
+                'solucion' => 'nullable|string',
+                'nombreCierre' => 'nullable|string',
+                'fechaCierre' => 'nullable|date',
+                'nombreSeguimiento' => 'nullable|string',
+                'fechaSeguimiento' => 'nullable|date',
+                'comentariosCliente' => 'nullable|string',
 
             ]);
 

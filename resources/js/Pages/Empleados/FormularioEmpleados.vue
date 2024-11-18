@@ -33,6 +33,7 @@ const add = () => {
         onProgress: () => {
             form.processing = true;
             form.reset();
+
         },
         onFinish: () => {
             form.reset();

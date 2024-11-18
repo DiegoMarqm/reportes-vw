@@ -94,7 +94,7 @@ const limpiarFiltros = () => {
     applyFilters();
 };
 
-const filteredReportes = ref(props.reporte);
+const filteredReportes = ref([...props.reporte].sort((a, b) => new Date(b.fechaQueja) - new Date(a.fechaQueja)));
 
 const applyFilters = () => {
     filteredReportes.value = props.reporte.filter(infoReporte => {
@@ -113,52 +113,43 @@ const applyFilters = () => {
 };
 
 const checkFechaQueja = (fechaQueja) => {
+    const fecha = new Date(fechaQueja + 'T00:00:00Z'); // Formato "YYYY-MM-DD" tratado como UTC
     const hoy = new Date();
-    const fecha = new Date(fechaQueja);
     let inicioRango = null;
-    let finRango = hoy;
+    let finRango = new Date(Date.UTC(hoy.getUTCFullYear(), hoy.getUTCMonth(), hoy.getUTCDate(), 23, 59, 59, 999));
 
     if (fechaEspecifica.value) {
         const [year, month] = fechaEspecifica.value.split('-');
-        inicioRango = new Date(year, month - 1, 1);
-        finRango = new Date(year, month, 0, 23, 59, 59);
+        inicioRango = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0, 0));
+        finRango = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
     }
 
-    if (fechaSeleccionada.value) {
+    if (fechaSeleccionada.value && inicioRango) {
+        const ajusteInicio = new Date(inicioRango);
         switch (fechaSeleccionada.value) {
-            case '1_mes':
-                inicioRango = inicioRango ? new Date(inicioRango) : new Date(hoy);
-                inicioRango.setMonth(inicioRango.getMonth() - 1);
-                break;
             case '3_meses':
-                inicioRango = inicioRango ? new Date(inicioRango) : new Date(hoy);
-                inicioRango.setMonth(inicioRango.getMonth() - 2);
+                ajusteInicio.setUTCMonth(ajusteInicio.getUTCMonth() - 2);
+                // Ajustar al primer día del mes de inicio
+                inicioRango = new Date(Date.UTC(ajusteInicio.getUTCFullYear(), ajusteInicio.getUTCMonth(), 1, 0, 0, 0, 0));
                 break;
             case '6_meses':
-                inicioRango = inicioRango ? new Date(inicioRango) : new Date(hoy);
-                inicioRango.setMonth(inicioRango.getMonth() - 5);
+                ajusteInicio.setUTCMonth(ajusteInicio.getUTCMonth() - 5);
+                inicioRango = new Date(Date.UTC(ajusteInicio.getUTCFullYear(), ajusteInicio.getUTCMonth(), 1, 0, 0, 0, 0));
                 break;
             case '1_año':
-                inicioRango = inicioRango ? new Date(inicioRango) : new Date(hoy);
-                inicioRango.setFullYear(inicioRango.getFullYear() - 1);
-                break;
-            case 'anteriores':
-                inicioRango = inicioRango ? new Date(inicioRango) : new Date(hoy);
-                inicioRango.setFullYear(inicioRango.getFullYear() - 1);
-                finRango = inicioRango;
-                inicioRango = null;
+                ajusteInicio.setUTCFullYear(ajusteInicio.getUTCFullYear() - 1);
+                inicioRango = new Date(Date.UTC(ajusteInicio.getUTCFullYear(), ajusteInicio.getUTCMonth(), 1, 0, 0, 0, 0));
                 break;
             default:
                 break;
         }
     }
 
-    if (inicioRango) {
-        return fecha >= inicioRango && fecha <= finRango;
-    } else {
-        return fecha <= finRango;
-    }
+    return inicioRango ? fecha >= inicioRango && fecha <= finRango : fecha <= finRango;
 };
+
+
+
 
 watch([searchQuery, advancedSearch, departamento, calificacion, estado, procedeQueja, fechaSeleccionada, fechaEspecifica], async () => {
     isSearching.value = true;
@@ -169,6 +160,7 @@ watch([searchQuery, advancedSearch, departamento, calificacion, estado, procedeQ
 
 defineExpose({ filteredReportes });
 
+console.log('Reportes:', props.reporte);
 </script>
 
 
@@ -260,7 +252,7 @@ defineExpose({ filteredReportes });
                                             <input type="month" v-model="fechaEspecifica" id="fechaEspecifica"
                                                 class="w-full px-4 py-2 border border-vw-tin-grey rounded-md text-vw-dark-blue focus:outline-none focus:ring-2 focus:ring-vw-light-blue" />
                                         </div>
-                                        <div>
+                                        <div v-if="fechaEspecifica">
                                             <label class="block text-sm font-medium text-vw-dark-blue mb-2"
                                                 for="fechaSeleccionada">
                                                 Rango de Fecha de Queja
@@ -268,11 +260,11 @@ defineExpose({ filteredReportes });
                                             <select v-model="fechaSeleccionada" id="fechaSeleccionada"
                                                 class="w-full px-4 py-2 border border-vw-tin-grey rounded-md text-vw-dark-blue focus:outline-none focus:ring-2 focus:ring-vw-light-blue">
                                                 <option value="">Todas</option>
-                                                <option value="1_mes">Último mes</option>
+                                                <!-- <option value="1_mes">Último mes</option> -->
                                                 <option value="3_meses">Últimos 3 meses</option>
                                                 <option value="6_meses">Últimos 6 meses</option>
                                                 <option value="1_año">Último año</option>
-                                                <option value="anteriores">Años anteriores</option>
+                                                <!-- <option value="anteriores">Años anteriores</option> -->
                                             </select>
                                         </div>
                                     </div>
@@ -306,7 +298,8 @@ defineExpose({ filteredReportes });
             </div>
 
             <div class="p-6">
-                <div v-if="noHayReportes" class="bg-white shadow-lg rounded-lg p-6 text-center text-vw-dark-blue font-vwtext">
+                <div v-if="noHayReportes"
+                    class="bg-white shadow-lg rounded-lg p-6 text-center text-vw-dark-blue font-vwtext">
                     No hay Reportes
                 </div>
                 <div v-else class="bg-white shadow-lg rounded-lg overflow-hidden">
@@ -372,10 +365,10 @@ defineExpose({ filteredReportes });
                             class="px-4 py-2 bg-vw-dark-blue text-white rounded hover:bg-vw-light-blue transition duration-300 disabled:opacity-50 ml-5">
                             Siguiente
                         </button>
-                        <button @click="currentPage = 1" :disabled="currentPage === 1"
+                        <!-- <button @click="currentPage = 1" :disabled="currentPage === 1"
                             class="px-4 py-2 bg-vw-dark-blue text-white rounded hover:bg-vw-light-blue transition duration-300 ml-5 disabled:opacity-50">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-undo-2"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
-                        </button>
+                        </button> -->
                     </div>
                 </div>
             </div>
