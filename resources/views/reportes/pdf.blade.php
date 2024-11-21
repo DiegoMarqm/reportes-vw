@@ -20,7 +20,7 @@
 
         @font-face {
             font-family: "VWHead-Light";
-            src: url('{{ storage_path('fonts/VWHeadWeb-light1.ttf') }}') format("truetype");
+            src: url('{{ storage_path('fonts/VWHeadWeb-Light1.ttf') }}') format("truetype");
             font-weight: normal;
             font-style: normal;
         }
@@ -38,7 +38,9 @@
 
         body {
             font-family: "VWTex-Regular", sans-serif;
-            border: #b8b8b8 1px solid;
+            /* border: #b8b8b8 1px solid; */
+            /* border-left: #b8b8b8 1px solid;
+            border-right: #b8b8b8 1px solid; */
             padding: 25px 30px;
             margin: 0.2cm 0.4cm 0.2cm 0.3cm;
             /* width: 100%; */
@@ -91,11 +93,12 @@
             /* margin-bottom: 10px; */
             height: 50px;
             /* border: 1px solid #ccc; */
+            width: 100%;
 
         }
 
         .departamento {
-            text-align: start;
+            /* text-align: start; */
             position: absolute;
             color: rgb(0, 30, 80);
             font-size: 10pt;
@@ -140,12 +143,14 @@
             /* padding-bottom: 5px; */
             /* margin-right: 15px; */
             font-size: 12px;
+            vertical-align: middle;
 
         }
 
         .departamento input[type="radio"] {
 
             padding-left: 20px;
+            vertical-align: middle;
         }
 
         .calificacion input[type="text"] {
@@ -173,6 +178,7 @@
             align-items: center;
             /* Align items vertically center */
             /* border: 1px solid #ccc; */
+            width: 100%;
         }
 
         .secciondos p {
@@ -213,9 +219,10 @@
             align-items: center;
 
             border-radius: 1px;
+            width: 100%;
         }
 
-        .secciontres p{
+        .secciontres p {
             color: rgb(0, 30, 80);
             font-size: 10pt;
             font-weight: bold;
@@ -242,21 +249,28 @@
 
         .detectoQueja label {
             display: inline-block;
-            position: relative;
+            /* position: relative; */
             /* padding-left: 20px; */
             padding-bottom: 5px;
             /* margin-right: 15px; */
+
             font-size: 10px;
+            vertical-align: middle;
         }
 
         .detectoQueja input[type="radio"] {
             padding-left: 20px;
+            position: relative;
             text-align: center;
             position: relative;
+            vertical-align: middle;
+            line-height: 10px;
+            text-align: center;
 
         }
 
-        .detectoQueja input[type='text']{
+
+        .detectoQueja input[type='text'] {
             font-size: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -278,6 +292,7 @@
             border: 1px solid #ccc;
             margin-top: 1px;
             border-radius: 1px;
+            width: 100%;
         }
 
         .seccioncuatro p {
@@ -305,7 +320,7 @@
         }
 
         .datos input[type="text"] {
-            font-size: 10pt;
+            font-size: 9pt;
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
@@ -313,6 +328,7 @@
             margin: 0 auto;
             text-align: center;
             background: #abdade;
+            color: #001E50;
             width: 300px;
             height: 12px;
             line-height: 12px;
@@ -327,6 +343,7 @@
             border: 1px solid #ccc;
             margin-top: 1px;
             border-radius: 1px;
+            width: 100%;
         }
 
         .seccioncinco p {
@@ -354,7 +371,7 @@
         }
 
         .datosIdentificacion input[type="text"] {
-            font-size: 10pt;
+            font-size: 9pt;
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
@@ -362,6 +379,7 @@
             margin: 0 auto;
             text-align: center;
             background: #abdade;
+            color: #001E50;
             /* width: 300px; */
             height: 12px;
             line-height: 12px;
@@ -387,13 +405,13 @@
             padding-left: 10px;
         }
 
-        .seccionseis small {
+        . .seccionseis small {
             color: #b8b8b8;
         }
 
         .datosReclamacionUno {
             position: relative;
-            font: size 10pt;
+            font: size 9pt;
             display: flex;
             flex-wrap: wrap;
             width: 49%;
@@ -403,8 +421,20 @@
         .areareclamacion {
             border: 1px solid #ccc;
             background: #abdade;
-            margin: 10px;
+            margin: 5px;
             height: 40mm;
+            font-size: 9pt;
+            color: #001E50;
+            /* font-family: "VWHead-Light"; */
+
+        }
+
+        .areareclamacion p {
+            color: #0d2753;
+            font-size: 9pt;
+            /* font-weight: bold; */
+            margin-bottom: 5px;
+            padding-left: 10px;
         }
 
         .datosReclamacionDos {
@@ -414,11 +444,12 @@
             /* justify-content: space-between; */
             display: flex;
             flex-wrap: wrap;
+            top: -195px;
             width: 50%;
             border: 1px solid #ccc;
             left: 50%;
             bottom: 205px;
-            height: 203px;
+            height: 193px;
         }
 
         .tipoReclamacion label {
@@ -457,13 +488,14 @@
 
         .otroReclamacion input[type="text"] {
             flex: 1;
-            font-size: 10pt;
+            font-size: 10px;
             text-align: center;
             /* vertical-align: center; */
             /* line-height: 10pt; */
 
             border: 1px solid #ccc;
             border-radius: 4px;
+            color: rgb(0, 30, 80);
             box-sizing: border-box;
             /* display: inline-block; */
             /* margin: 0 auto; */
@@ -471,7 +503,7 @@
             background: #abdade;
             /* width: 300px; */
             /* height: 12px; */
-            line-height: 11px;
+            line-height: 10px;
         }
 
         .seccionsiete {
@@ -479,6 +511,7 @@
             position: relative;
             padding-bottom: 15px;
             height: 200px;
+            bottom: 10px;
             /* border: 1px solid #ccc; */
             margin-top: 1px;
             border-radius: 1px;
@@ -590,7 +623,7 @@
         .seccionocho p {
             display: inline-flex;
             font-size: 8pt;
-            /* color: rgb(0, 30, 80); */
+            color: #001E50;
             /* font-weight: bold; */
             margin-bottom: 5px;
             padding-left: 10px;
@@ -602,12 +635,14 @@
             display: inline-flex;
             align-items: center;
             margin-right: 50px;
+            color: #001E50;
 
         }
 
         .seccionocho input[type="radio"] {
             margin-right: 5px;
             width: 10px;
+            color: #001E50;
         }
 
         .seccionnueve {
@@ -831,7 +866,7 @@
 
         .personalSeg {
             position: relative;
-            font: size 10pt;
+            font: size 9pt;
             display: flex;
             flex-wrap: wrap;
             width: 79%;
@@ -842,6 +877,7 @@
         .nomfechaSeg {
             /* background-color: #abdade; */
             display: flex;
+            font-size: 9pt;
         }
 
         .nomSeg {
@@ -857,7 +893,7 @@
             /* text-align: start; */
             /* margin-right: 10px; */
             right: 120px;
-            font-size: 10pt;
+            font-size: 9pt;
         }
 
         .pfechaSeg {
@@ -874,6 +910,7 @@
             left: 310px;
             bottom: 90px;
             width: 260px;
+            font-size: 9pt;
         }
 
         .firmaSeg {
@@ -918,7 +955,7 @@
 
         .secciontrece p {
             color: rgb(0, 30, 80);
-            font-size: 10pt;
+            font-size: 9pt;
             /* font-weight: bold; */
             margin-bottom: 5px;
             padding-left: 10px;
@@ -982,7 +1019,7 @@
     </div>
     <div class="secciontres">
         <div class="detectoQueja">
-            <p>Forma en que se detecto la queja:</p>
+            <p>Forma en que se detectó la queja:</p>
 
             <label>
                 <input type="radio" name="decQueja" value="Prescencial"
@@ -997,10 +1034,10 @@
                     {{ $reporte->formaDeteccion == 'Redes sociales' ? 'checked' : '' }}> Redes Sociales
             </label>
             {{-- @if (!empty($reporte->redSocial)) --}}
-                <label>
-                    <input type="text" name="redsocial" id="redsocial" value="{{ $reporte->redSocial }}"
-                        style="height: 10px">
-                </label>
+            <label>
+                <input type="text" name="redsocial" id="redsocial" value="{{ $reporte->redSocial }}"
+                    style="height: 10px">
+            </label>
             {{-- @endif --}}
             <label>
                 <input type="radio" name="decQueja" value="Llamadaseguimiento"
@@ -1131,7 +1168,7 @@
                             <label for="">Citas</label>
 
                         </div>
-                        <div class="otroReclamacion" style="position: relative; bottom: 75%; width: auto; ">
+                        <div class="otroReclamacion" style="position: relative; bottom: 80%; width: auto; ">
                             <label for="">¿Cuál?</label>
                             <input type="text" value="{{ $reporte->otroTipoReclamacion }}"
                                 style="width: 260px; height: 10px;">
@@ -1144,7 +1181,7 @@
     <div class="seccionsiete">
         <div>
             <div class="causaRaiz">
-                <p>Causa - Raiz de la queja</small>
+                <p>Causa - Raíz de la queja</small>
                 </p>
                 {{-- Div con la gráfica ishikawa --}}
                 <div class="pescado">
@@ -1234,113 +1271,120 @@
             </div>
         </div>
     </div>
-    <div class="seccionocho">
-        <p style="">De Acuerdo a este formato y a la información aquí descrita. <strong>¿Procede la
-                queja?</strong></p>
-        <input type="radio" name="procede" value="si" {{ $reporte->procedeQueja == '1' ? 'checked' : '' }}>
-        <label>Si</label>
-        <input type="radio" name="procede" value="no" {{ $reporte->procedeQueja == '0' ? 'checked' : '' }}>
-        <label>No</label>
-    </div>
-    <div class="seccionnueve">
+    <div style="position: relative; bottom: 10px;">
+        <div class="seccionocho">
+            <p style="">De acuerdo a este formato y a la información aquí descrita. <strong>¿Procede la
+                    queja?</strong></p>
+            <input type="radio" name="procede" value="si"
+                {{ $reporte->procedeQueja == '1' ? 'checked' : '' }}>
+            <label>Si</label>
+            <input type="radio" name="procede" value="no"
+                {{ $reporte->procedeQueja == '0' ? 'checked' : '' }}>
+            <label>No</label>
+        </div>
+        <div class="seccionnueve">
 
-        <div style="position: relative; bottom: 10px">
-            <div class="datosnueve">
-                <p class="bold">¿Qué solución se le dio al cliente?</p>
-                <div class="nombre">
-                    <div style="margin-left: 10px; margin-right: 10px;" class="solucion">
-                        <p>{{ $reporte->solucion }} </p>
+            <div style="position: relative; bottom: 10px">
+                <div class="datosnueve">
+                    <p class="bold">¿Qué solución se le dio al cliente?</p>
+                    <div class="nombre">
+                        <div style="margin-left: 10px; margin-right: 10px;" class="solucion">
+                            <p>{{ $reporte->solucion }} </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="secciondiez">
-        <div class="personal">
-            <p>Personal que cerro la reclamación:</p>
-            <div class="nomfecha">
-                <div class="nom">
-                    <p class="pnombre">Nombre:</p>
-                    <div
-                        style="background-color: #abdade; margin-left: 8px; height: 25px; position: relative; bottom: 15px;">
-                        <p style="position: relative; right: 100px; top: 4px; margin-left: 15px;">{{ $reporte->nombreCierre }}</p>
+        <div class="secciondiez">
+            <div class="personal">
+                <p>Personal que cerro la reclamación:</p>
+                <div class="nomfecha">
+                    <div class="nom">
+                        <p class="pnombre">Nombre:</p>
+                        <div
+                            style="background-color: #abdade; margin-left: 8px; height: 25px; position: relative; bottom: 15px;">
+                            <p style="position: relative; right: 100px; top: 4px; margin-left: 40px;">
+                                {{ $reporte->nombreCierre }}</p>
+                        </div>
                     </div>
-                </div>
-                <div class="fecha">
-                    <p class="pfecha">Fecha:</p>
-                    <div
-                        style="background-color: #abdade; margin-left: 8px; height: 25px; position: relative; bottom: 15px;">
-                        <p style="position: relative; right: 80px; top: 4px;">{{ $reporte->fechaCierre }}</p>
+                    <div class="fecha">
+                        <p class="pfecha">Fecha:</p>
+                        <div
+                            style="background-color: #abdade; margin-left: 8px; height: 25px; position: relative; bottom: 15px;">
+                            <p style="position: relative; right: 80px; top: 4px;">{{ $reporte->fechaCierre }}</p>
+                        </div>
                     </div>
+
                 </div>
+
 
             </div>
 
+            <div class="firma">
+                <p>Firma:</p>
+                <div class="areafirma">
 
-        </div>
-
-        <div class="firma">
-            <p>Firma:</p>
-            <div class="areafirma">
-
-            </div>
-        </div>
-    </div>
-    <div style="height: 10px;">
-
-    </div>
-    <div class="secciononce">
-        <div class="garea">
-            <p>Gerente de Área</p>
-        </div>
-
-        <div class="cexp">
-            <p>Consultor de Experiencia</p>
-        </div>
-
-        <div class="crm">
-            <p>CRM</p>
-        </div>
-    </div>
-
-    <div class="secciondoce">
-        <div class="personalSeg">
-            <p>Personal que realizó contacto de seguimiento:</p>
-            <div class="nomfechaSeg">
-                <div class="nomSeg">
-                    <p class="pnombreSeg">Nombre:</p>
-                    <div
-                        style="background-color: #abdade; margin-left: 8px; height: 25px; position: relative; bottom: 15px;">
-                        <p style="position: relative; right: 100px; top: 4px; margin-left: 15px;">{{ $reporte->nombreCierre }}</p>
-                    </div>
-                </div>
-                <div class="fechaSeg">
-                    <p class="pfechaSeg">Fecha:</p>
-                    <div
-                        style="background-color: #abdade; margin-left: 8px; height: 25px; position: relative; bottom: 15px;">
-                        <p style="position: relative; right: 80px; top: 4px;">{{ $reporte->fechaCierre }}</p>
-                    </div>
                 </div>
             </div>
         </div>
-        <div class="firmaSeg">
-            <p>Firma:</p>
-            <div class="areafirmaSeg">
+        <div style="height: 10px;">
+
+        </div>
+        <div class="secciononce">
+            <div class="garea">
+                <p>Gerente de Área</p>
+            </div>
+
+            <div class="cexp">
+                <p>Consultor de Experiencia</p>
+            </div>
+
+            <div class="crm">
+                <p>CRM</p>
             </div>
         </div>
-    </div>
 
-    <div class="secciontrece">
-        <div style="position: relative; bottom: 10px">
-            <div class="datosnuevetrece">
-                <p class="bold">Comentarios del cliente:</p>
-                <div class="nombretrece">
-                    <div style="margin-left: 10px; margin-right: 10px;" class="soluciontrece">
-                        <p>{{ $reporte->solucion }} </p>
+        <div class="secciondoce">
+            <div class="personalSeg">
+                <p>Personal que realizó contacto de seguimiento:</p>
+                <div class="nomfechaSeg">
+                    <div class="nomSeg">
+                        <p class="pnombreSeg">Nombre:</p>
+                        <div
+                            style="background-color: #abdade; margin-left: 8px; height: 25px; position: relative; bottom: 15px;">
+                            <p style="position: relative; right: 100px; top: 4px; margin-left: 40px;">
+                                {{ $reporte->nombreCierre }}</p>
+                        </div>
+                    </div>
+                    <div class="fechaSeg">
+                        <p class="pfechaSeg">Fecha:</p>
+                        <div
+                            style="background-color: #abdade; margin-left: 8px; height: 25px; position: relative; bottom: 15px;">
+                            <p style="position: relative; right: 80px; top: 4px;">{{ $reporte->fechaCierre }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="firmaSeg">
+                <p>Firma:</p>
+                <div class="areafirmaSeg">
+                </div>
+            </div>
+        </div>
+
+        <div class="secciontrece">
+            <div style="position: relative; bottom: 10px">
+                <div class="datosnuevetrece">
+                    <p class="bold">Comentarios del cliente:</p>
+                    <div class="nombretrece">
+                        <div style="margin-left: 10px; margin-right: 10px;" class="soluciontrece">
+                            <p>{{ $reporte->solucion }} </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 
 

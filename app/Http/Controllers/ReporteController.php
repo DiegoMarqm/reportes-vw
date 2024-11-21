@@ -165,6 +165,26 @@ class ReporteController extends Controller
         }
     }
 
+    public function eliminarReporte($id)
+    {
+        $reporte = Report::find($id);
+
+        $pdfPath = $reporte->reportePDF;
+
+        $carpetaEvidencias = 'evidencias/' . $reporte->numFolio;
+
+        if (Storage::disk('public')->exists($pdfPath)) {
+            Storage::disk('public')->delete($pdfPath);
+        }
+
+        if (Storage::disk('public')->exists($carpetaEvidencias)) {
+            Storage::disk('public')->deleteDirectory($carpetaEvidencias);
+        }
+
+        $reporte->delete();
+        return redirect()->route('reporte.index')->with('success', 'Reporte eliminado correctamente');
+    }
+
     //Agregar la funcion para ver la informacion completa del reporte:
     public function showReporte($id)
     {
@@ -190,7 +210,6 @@ class ReporteController extends Controller
 
             // return redirect()->route('reporte.index')->with('success', 'Cambio Exitoso');
             return redirect()->back()->with('success', 'Cambio Exitoso');
-
         } else {
             return redirect()->route('reporte.index')->with('error', 'Reporte no encontrado');
         }

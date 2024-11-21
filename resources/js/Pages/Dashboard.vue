@@ -1,172 +1,36 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import { Chart, registerables } from 'chart.js';
 import { ref, onMounted, computed } from 'vue';
-
-Chart.register(...registerables);
+import Chart from '@/Components/Chart.vue';
+import { FileText, PercentIcon, Star, Clock } from 'lucide-vue-next';
 
 const props = defineProps({
-    empleadosPorRol: {
-        type: Array,
-        required: true
-    },
-    reportesTotal: {
-        type: Number,
-        required: true
-    },
-    reporteDepartamento: {
-        type: Array,
-        required: true
-    },
-    redesSociales: {
-        type: Array,
-        required: true
-    },
-    reportesFinalizados: {
-        type: Number,
-        required: true
-    }
+    totalReportes: Number,
+    porcentajeProcedentes: Number,
+    calificacionPromedio: Number,
+    tiempoResolucion: Number,
+    quejasPorMes: Array,
+    calificacionesPorMes: Array,
+    cierrePorMes: Array,
 });
 
-console.log(props.reportesFinalizados);
+const quejasPorMesComputed = computed(() => props.quejasPorMes?.length ? props.quejasPorMes : []);
+const calificacionesPorMesComputed = computed(() => props.calificacionesPorMes?.length ? props.calificacionesPorMes : []);
+const cierrePorMesComputed = computed(() => props.cierrePorMes?.length ? props.cierrePorMes : []);
 
 const obtenerYearActual = () => new Date().getFullYear();
 
-
-
-
-//reporteDepartamento contiene lo siguiente:
-// $reportesTotalesPorDepartamentoTotalYear = Report::select('departamento', DB::raw('count(*) as total'))
-// ->whereIn('departamento', ['Ventas', 'Servicio', 'Refacciones', 'Seminuevos'])
-// ->whereYear('created_at', date('Y'))
-// ->groupBy('departamento')
-// ->get();
-
-//Como podemos hacer un un input Select para seleccionar el mes y el año para mostrar los reportes por departamento departamentos y el total de reportes
-
-
-
-
-const empleadosChartRef = ref(null);
-const reportesChartRef = ref(null);
-const redesSocialesChartRef = ref(null);
-
-const totalEmpleados = computed(() =>
-    props.empleadosPorRol.reduce((sum, item) => sum + item.total, 0)
-);
-
-const totalRep = computed(() =>
-    props.reporteDepartamento.reduce((sum, item) => sum + item.total, 0)
-);
-
-onMounted(() => {
-    createChart(empleadosChartRef.value, {
-        type: 'doughnut',
-        data: {
-            labels: props.empleadosPorRol.map(item => item.rol),
-            datasets: [{
-                data: props.empleadosPorRol.map(item => item.total),
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.8)',
-                    'rgba(54, 162, 235, 0.8)',
-                    'rgba(255, 206, 86, 0.8)',
-                    'rgba(75, 192, 192, 0.8)',
-                    'rgba(153, 102, 255, 0.8)',
-                ],
-                borderColor: 'rgba(255, 255, 255, 1)',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                },
-                title: {
-                    display: true,
-                    text: 'Distribución de Empleados por Rol'
-                }
-            }
-        }
-    });
-
-    createChart(reportesChartRef.value, {
-        type: 'bar',
-        data: {
-            labels: props.reporteDepartamento.map(item => item.departamento),
-
-            datasets: [{
-                label: 'Número de Reportes',
-                data: props.reporteDepartamento.map(item => Math.floor(item.total)),
-                backgroundColor: 'rgba(0, 30, 70, 0.7)',
-                borderColor: 'rgba(0, 30, 70, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return Number.isInteger(value) ? value : null;
-                        }
-                    }
-                }
-            },
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Reportes por Departamento'
-                }
-            }
-        }
-    });
-
-    createChart(redesSocialesChartRef.value, {
-        type: 'bar',
-        data: {
-            labels: props.redesSociales.map(item => item.redSocial),
-
-            datasets: [{
-                label: 'Número de Reportes por Red Social',
-                data: props.redesSociales.map(item => item.total),
-                backgroundColor: 'rgba(0, 30, 70, 0.7)',
-                borderColor: 'rgba(0, 30, 70, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return Number.isInteger(value) ? value : null;
-                        }
-                    }
-                }
-            },
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Reportes por Red Social'
-                }
-            }
-        }
-    });
-});
-
-function createChart(ctx, config) {
-    return new Chart(ctx, config);
-}
+const cardData = [
+    { title: 'Total de Reportes', value: props.totalReportes, icon: FileText, color: 'bg-blue-500', textColor: 'text-blue-600' },
+    { title: 'Porcentaje de quejas que procedieron', value: `${props.porcentajeProcedentes}%`, icon: PercentIcon, color: 'bg-green-500', textColor: 'text-green-600' },
+    { title: 'Calificación Promedio quejas ', value: props.calificacionPromedio.toFixed(1), icon: Star, color: 'bg-yellow-500', textColor: 'text-yellow-600' },
+    { title: 'Tiempo Promedio de Resolución', value: `${props.tiempoResolucion} días`, icon: Clock, color: 'bg-purple-500', textColor: 'text-purple-600' },
+];
 </script>
 
 <template>
+
     <Head title="Dashboard" />
 
     <AuthenticatedLayout>
@@ -175,27 +39,48 @@ function createChart(ctx, config) {
         </template>
 
         <div class="p-6 bg-gray-100">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-semibold mb-4">Empleados por Rol</h2>
-                    <canvas ref="empleadosChartRef"></canvas>
-                    <p class="text-center mt-4 text-lg font-medium">
-                        Total de Empleados: {{ totalEmpleados }}
-                    </p>
+            <div class="dashboard-info mb-8">
+                <h2 class="text-2xl font-bold mb-6 text-gray-700">Información General</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div v-for="(card, index) in cardData" :key="index"
+                        class="card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
+                        <div class="p-6">
+                            <h3 class="text-sm font-medium text-gray-500 mb-2 h-10 overflow-hidden text-center"
+                                style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{
+                                card.title
+                                }}</h3>
+                            <div class="flex items-center justify-center h-10">
+                                <span :class="[card.textColor, 'text-2xl font-bold truncate text-center mr-2']">{{ card.value }}</span>
+                                <div :class="[card.color, 'rounded-full p-2 text-white']">
+                                    <component :is="card.icon" size="20" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </div>
 
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-semibold mb-4">Reportes por Departamento</h2>
-                    <canvas ref="reportesChartRef"></canvas>
-                    <p class="text-center mt-4 text-lg font-medium">
-                        Total de Reportes: {{ totalRep }}
-                    </p>
-                </div>
-
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-semibold mb-4">Reportes por Red Social</h2>
-                    <canvas ref="redesSocialesChartRef"></canvas>
-
+            <div class="dashboard-charts">
+                <!-- <h2 class="text-2xl font-bold mb-6 text-gray-700">Gráficos de Tendencias</h2> -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <Chart
+                            :labels="['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']"
+                            :data="quejasPorMesComputed" title="Quejas totales por mes" type="bar"
+                            :colors="['rgba(59, 130, 246, 0.5)', 'rgba(59, 130, 246, 1)']" />
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <Chart
+                            :labels="['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']"
+                            :data="calificacionesPorMesComputed" title="Promedio de calificaciones por mes" type="line"
+                            :colors="['rgba(245, 158, 11, 0.5)', 'rgba(245, 158, 11, 1)']" />
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <Chart
+                            :labels="['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']"
+                            :data="cierrePorMesComputed" title="Tasa de cierres por mes" type="line"
+                            :colors="['rgba(16, 185, 129, 0.5)', 'rgba(16, 185, 129, 1)']" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -203,33 +88,11 @@ function createChart(ctx, config) {
 </template>
 
 <style scoped>
-.grid {
-    display: grid;
-    gap: 1.5rem;
+.card {
+    transition: all 0.3s ease;
 }
 
-@media (min-width: 768px) {
-    .grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
-.bg-white {
-    background-color: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    padding: 1.5rem;
-}
-
-h2 {
-    color: #2d3748;
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-}
-
-canvas {
-    max-width: 100%;
-    height: auto;
+.card:hover {
+    transform: translateY(-5px);
 }
 </style>

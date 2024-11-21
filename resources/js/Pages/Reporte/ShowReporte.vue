@@ -160,6 +160,29 @@ function nextPage() {
 }
 
 
+const showDeleteModal = ref(false);
+
+function openDeleteModal(id) {
+    showDeleteModal.value = true;
+    console.log(id);
+}
+
+function confirmDelete() {
+    // Lógica para eliminar el reporte
+    form.delete(route('reporte.eliminarReporte', props.reporte.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showDeleteModal.value = false;
+            // Redirigir a la lista de reportes
+            location.href = route('reporte.index');
+            console.log('Reporte eliminado');
+        },
+        onError: (errors) => {
+            console.error(errors);
+        }
+    });
+}
+
 </script>
 
 <template>
@@ -301,7 +324,8 @@ function nextPage() {
                                             <h4 class="font-medium text-red-700 mb-2">Causa Raíz:</h4>
                                             <ul class="list-disc list-inside pl-4 space-y-1 text-red-900">
                                                 <li v-for="(value, key) in props.reporte.causaRaiz" :key="key">
-                                                    {{ key.charAt(0).toUpperCase() + key.slice(1) }}: {{ value || 'N/A' }}
+                                                    {{ key.charAt(0).toUpperCase() + key.slice(1) }}: {{ value || 'N/A'
+                                                    }}
                                                 </li>
                                             </ul>
                                         </div>
@@ -349,7 +373,9 @@ function nextPage() {
                                             </p>
 
                                             <p class="flex items-center mb-3">
-                                                <span class="font-medium text-purple-700 mr-2">Nombre del empleado que realizó el cierre: </span>
+                                                <span class="font-medium text-purple-700 mr-2">Nombre del empleado que
+                                                    realizó
+                                                    el cierre: </span>
                                                 <span>
                                                     {{ props.reporte.nombreCierre }}
                                                 </span>
@@ -363,21 +389,26 @@ function nextPage() {
                                             </p>
 
                                             <p class="flex items-center mb-3">
-                                                <span class="font-medium text-purple-700 mr-2">Personal que realizó el contacto de seguimiento : </span>
+                                                <span class="font-medium text-purple-700 mr-2">Personal que realizó el
+                                                    contacto
+                                                    de seguimiento : </span>
                                                 <span>
                                                     {{ props.reporte.nombreSeguimiento }}
                                                 </span>
                                             </p>
 
                                             <p class="flex items-center mb-3">
-                                                <span class="font-medium text-purple-700 mr-2">Fecha de contacto de seguimiento: </span>
+                                                <span class="font-medium text-purple-700 mr-2">Fecha de contacto de
+                                                    seguimiento:
+                                                </span>
                                                 <span>
                                                     {{ props.reporte.fechaSeguimiento }}
                                                 </span>
                                             </p>
 
                                             <p class="flex items-center mb-3">
-                                                <span class="font-medium text-purple-700 mr-2">Comentarios del cliente: </span>
+                                                <span class="font-medium text-purple-700 mr-2">Comentarios del cliente:
+                                                </span>
                                                 <span>
                                                     {{ props.reporte.comentariosCliente }}
                                                 </span>
@@ -574,13 +605,13 @@ function nextPage() {
                             <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
 
                                 <!-- //Link para ir a  -->
-                                <Link v-if="props.reporte.estado" :href="route('reporte.edit', props.reporte.id)"
+                                <Link v-if="props.reporte.estado" :href="route('reporte.edit', props.reporte.id,)"
                                     class="inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white border border-transparent rounded-md font-semibold text-xs  uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring focus:ring-green-300 disabled:opacity-25 transition">
                                 Editar
                                 </Link>
 
-                                <!-- <button v-if="infoReporte.estado"
-                                            class="text-vw-lake-blue hover:text-vw-dark-blue mr-2">Editar</button> -->
+                                <button @click="openDeleteModal(props.reporte.id)"
+                                    class="inline-flex items-center justify-center px-4 py-2 bg-red-600 text-white border border-transparent rounded-md font-semibold text-xs  uppercase tracking-widest hover:bg-red-700 active:bg-red-900 focus:outline-none focus:border-red-900 focus:ring focus:ring-red-300 disabled:opacity-25 transition">Eliminar</button>
                             </div>
 
                             <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
@@ -604,6 +635,25 @@ function nextPage() {
                 </div>
             </div>
         </div>
+
+        <!-- Aqui puede ir el transition para el modal -->
+
+        <transition name="modal-fade">
+            <div v-if="showDeleteModal" class="fixed inset-0 flex items-center justify-center z-50 font-vwtext">
+                <div class="absolute inset-0 bg-black opacity-50"></div>
+                <div class="bg-white rounded-lg shadow-lg p-6 z-10">
+                    <h3 class="text-lg font-vwheadbold mb-4 text-center">Confirmar Eliminación</h3>
+                    <p class="mb-6">¿Estás seguro de que deseas eliminar este reporte?</p>
+                    <div class="flex justify-center space-x-4">
+                        <button @click="showDeleteModal = false"
+                            class="px-4 py-2 bg-gray-300 rounded-md">Cancelar</button>
+                        <button @click="confirmDelete"
+                            class="px-4 py-2 bg-red-600 text-white rounded-md">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
     </AuthenticatedLayout>
 </template>
 

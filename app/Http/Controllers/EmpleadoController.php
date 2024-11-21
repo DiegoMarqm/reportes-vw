@@ -7,6 +7,8 @@ use App\Models\Report;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
 
 class EmpleadoController extends Controller
 {
@@ -19,61 +21,83 @@ class EmpleadoController extends Controller
 
     public function datosgrafica()
     {
-        $empleadosPorRol = Empleado::select('rol', DB::raw('count(*) as total'))
-            ->groupBy('rol')
-            ->get();
+        $currentYear = Carbon::now()->year;
 
-        $reportesPorDepartamento = Report::select('departamento', DB::raw('count(*) as total'))
-            ->whereIn('departamento', ['Ventas', 'Servicio', 'Refacciones', 'Seminuevos'])
-            ->groupBy('departamento')
-            ->get();
+        // Total de reportes del año actual
+        $totalReportes = Report::whereYear('fechaQueja', $currentYear)->count();
 
-        $reportesTotalesPorDepartamentoTotalYear = Report::select('departamento', DB::raw('count(*) as total'))
-            ->whereIn('departamento', ['Ventas', 'Servicio', 'Refacciones', 'Seminuevos'])
-            ->whereYear('created_at', date('Y'))
-            ->groupBy('departamento')
-            ->get();
+        // Porcentaje de quejas procedentes
+        $procedentes = Report::whereYear('fechaQueja', $currentYear)->where('procedeQueja', true)->count();
+        $porcentajeProcedentes = $totalReportes > 0 ? ($procedentes / $totalReportes) * 100 : 0;
 
-        $redesSociales = Report::select('redSocial', DB::raw('count(*) as total'))
-            ->whereNotNull('redSocial')
-            ->whereYear('created_at', date('Y'))
-            ->where('redSocial', '!=', '')
-            ->groupBy('redSocial')
-            ->get();
+        // Calificación promedio
+        $calificacionPromedio = Report::whereYear('fechaQueja', $currentYear)->avg('calificacion');
 
-        $reportesFinalizados = Report::select(DB::raw('count(*) as total'))
-            ->where('estado', false)
-            ->whereYear('created_at', date('Y'))
-            ->get();
+        // Tiempo promedio de resolución
+        $tiempoResolucion = Report::whereYear('fechaQueja', $currentYear)
+            ->whereNotNull('fechaCierre')
+            ->selectRaw('AVG(DATEDIFF(fechaCierre, fechaQueja)) as promedio')
+            ->value('promedio');
+
+        // Quejas por mes
+        $quejasPorMes = Report::whereYear('fechaQueja', $currentYear)
+            ->selectRaw('MONTH(fechaQueja) as mes, COUNT(*) as total')
+            ->groupBy('mes')
+            ->orderBy('mes')
+            ->get()
+            ->pluck('total', 'mes');
+
+        // Promedio de calificaciones por mes
+        $calificacionesPorMes = Report::whereYear('fechaQueja', $currentYear)
+            ->selectRaw('MONTH(fechaQueja) as mes, AVG(calificacion) as promedio')
+            ->groupBy('mes')
+            ->orderBy('mes')
+            ->get()
+            ->pluck('promedio', 'mes');
+
+        // Tasa de cierre por mes
+        $cierrePorMes = Report::whereYear('fechaQueja', $currentYear)
+            ->whereNotNull('fechaCierre')
+            ->selectRaw('MONTH(fechaQueja) as mes, COUNT(*) as totalCerradas')
+            ->groupBy('mes')
+            ->orderBy('mes')
+            ->get()
+            ->pluck('totalCerradas', 'mes');
+
+        // Preparar datos en formato legible para el frontend
+        $meses = range(1, 12);
+        $quejasData = [];
+        $calificacionesData = [];
+        $cierreData = [];
+
+        foreach ($meses as $mes) {
+            $quejasData[] = $quejasPorMes[$mes] ?? 0;
+            $calificacionesData[] = round($calificacionesPorMes[$mes] ?? 0, 2);
+            $cierreData[] = $cierrePorMes[$mes] ?? 0;
+        }
 
 
-        // Guardar el numero de reportes por cada departamento por cada mes en el año actual
-        $reportesPorDepartamento = Report::select('departamento', DB::raw('count(*) as total'))
-            ->whereIn('departamento', ['Ventas', 'Servicio', 'Refacciones', 'Seminuevos'])
-            ->whereYear('created_at', date('Y'))
-            ->groupBy('departamento')
-            ->get();
+        // Quiero que agreguemos lo siguiente:
 
-
-
-        // $reportesPorCadaRedSocial = Report::select('redSocial', DB::raw('count(*) as total'))
-        //     ->groupBy('redSocial')
-        //     ->get();
-
+        //Quejas por departamento: Gráfico de barras para mostrar cuántas quejas se registraron en cada departamento.
         
 
-        $totalReportes = Report::count();
+        //Calificaciones por departamento: Gráfico de barras para mostrar el promedio de calificaciones por departamento.
+
+        //Departamentos con mayor número de quejas procedentes: Tabla o gráfico de barras que destaque los departamentos con el mayor porcentaje de quejas que procedieron.
 
 
 
+
+        // Preparar datos para enviar a la vista
         return Inertia::render('Dashboard', [
-            'empleadosPorRol' => $empleadosPorRol,
-            'reportesTotal' => $totalReportes,
-            'redesSociales' => $redesSociales,
-            // 'reporteDepartamento' => $reportesPorDepartamento,
-            'reporteDepartamento' => $reportesTotalesPorDepartamentoTotalYear,
-            'reportesFinalizados' => $reportesFinalizados,
-
+            'totalReportes' => $totalReportes,
+            'porcentajeProcedentes' => round($porcentajeProcedentes, 2),
+            'calificacionPromedio' => round($calificacionPromedio, 2),
+            'tiempoResolucion' => round($tiempoResolucion, 2),
+            'quejasPorMes' => $quejasData,
+            'calificacionesPorMes' => $calificacionesData,
+            'cierrePorMes' => $cierreData,
         ]);
     }
 

@@ -664,6 +664,7 @@ const limpiarFormulario = () => {
 
 <style scoped>
 .fixed {
+    
     position: fixed;
     top: 0;
     left: 0;

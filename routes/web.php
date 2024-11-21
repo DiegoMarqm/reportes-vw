@@ -35,13 +35,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/reporte', [ReporteController::class, 'index'])->name('reporte.index');
     Route::get('/reporte/create', [ReporteController::class, 'create'])->name('reporte.create');
     Route::post('/reporte', [ReporteController::class, 'store'])->name('reporte.store');
+    Route::delete('/reporte/{id}', [ReporteController::class, 'eliminarReporte'])->name('reporte.eliminarReporte');
 
     //Route EditReporte
     Route::get('/reporte/{infoReporte}/edit', [ReporteController::class, 'editReporte'])->name('reporte.edit');
     Route::put('/reporte/{infoReporte}', [ReporteController::class, 'update'])->name('reporte.update');
 
 
-    Route::get('/reporte/{infoReporte}', [ReporteController::class, 'showReporte'])->name('reporte.show');
+    Route::get('/reporte/{infoReporte}/', [ReporteController::class, 'showReporte'])->name('reporte.show');
+
     Route::post('reporte/{infoReporte}/toggle-status', [ReporteController::class, 'toogleEstado'])->name('reporte.toggleEstado');
     Route::get('/reporte/{id}/descargar', [ReporteController::class, 'generarPDF'])->name('reporte.generarPDF');
     Route::post('/reporte/{id}/subirPDF', [ReporteController::class, 'subirPDF'])->name('reporte.subirPDF');

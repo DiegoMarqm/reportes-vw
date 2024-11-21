@@ -20,6 +20,7 @@ const paginatedReportes = computed(() => {
     return filteredReportes.value.slice(start, end);
 });
 
+
 const totalPages = computed(() => Math.ceil(filteredReportes.value.length / pageSize.value));
 
 const nextPage = () => {
@@ -28,41 +29,6 @@ const nextPage = () => {
 
 const prevPage = () => {
     if (currentPage.value > 1) currentPage.value--;
-};
-
-
-
-const form = useForm({
-    estado: true
-});
-
-function toogleStatus(id) {
-    form.post(route('reporte.toggleEstado', id), {
-        onSuccess: () => console.log('Cambiando estado del reporte:', id),
-        onFinish: () => console.log('Cambiando estado del reporte:', id)
-    });
-}
-
-const showDeleteModal = ref(false);
-const reporteToDelete = ref(null);
-
-
-
-const openDeleteModal = (reporte) => {
-    reporteToDelete.value = reporte;
-    showDeleteModal.value = true;
-    document.body.style.overflow = 'hidden';
-};
-
-const closeDeleteModal = () => {
-    showDeleteModal.value = false;
-    reporteToDelete.value = null;
-    document.body.style.overflow = '';
-};
-
-const deleteReporte = () => {
-    console.log('Eliminando reporte:', reporteToDelete.value);
-    closeDeleteModal();
 };
 
 const searchQuery = ref('');
@@ -94,11 +60,13 @@ const limpiarFiltros = () => {
     applyFilters();
 };
 
-const filteredReportes = ref([...props.reporte].sort((a, b) => new Date(b.fechaQueja) - new Date(a.fechaQueja)));
+// const filteredReportes = ref([...props.reporte].sort((a, b) => new Date(b.fechaQueja) - new Date(a.fechaQueja)));
+const filteredReportes = ref([...props.reporte]);
 
 const applyFilters = () => {
     filteredReportes.value = props.reporte.filter(infoReporte => {
         if (!advancedSearch.value) {
+            // console.log(filteredReportes.value)
             return !searchQuery.value || infoReporte.numFolio.toString().toLowerCase().includes(searchQuery.value.toLowerCase());
         } else {
             const cumpleDepartamento = !departamento.value || infoReporte.departamento.toLowerCase().includes(departamento.value.toLowerCase());
@@ -106,11 +74,26 @@ const applyFilters = () => {
             const cumpleEstado = !estado.value || ((infoReporte.estado ? 'activo' : 'finalizado') === estado.value);
             const cumpleProcedeQueja = !procedeQueja.value || ((infoReporte.procedeQueja ? 'si' : 'no') === procedeQueja.value);
             const cumpleFecha = checkFechaQueja(infoReporte.fechaQueja);
+
+            // console.log(filteredReportes.value)
+
             return cumpleDepartamento && cumpleCalificacion && cumpleEstado && cumpleProcedeQueja && cumpleFecha;
+
+
         }
+
     });
+
     noHayReportes.value = filteredReportes.value.length === 0;
+
+    // Sino hay filtros mostrar todo los registros
+    if (!searchQuery.value && !departamento.value && !calificacion.value && !estado.value && !procedeQueja.value && !fechaSeleccionada.value && !fechaEspecifica.value) {
+        filteredReportes.value = props.reporte;
+    }
+
 };
+
+
 
 const checkFechaQueja = (fechaQueja) => {
     const fecha = new Date(fechaQueja + 'T00:00:00Z'); // Formato "YYYY-MM-DD" tratado como UTC
@@ -160,7 +143,6 @@ watch([searchQuery, advancedSearch, departamento, calificacion, estado, procedeQ
 
 defineExpose({ filteredReportes });
 
-console.log('Reportes:', props.reporte);
 </script>
 
 
@@ -194,84 +176,97 @@ console.log('Reportes:', props.reporte);
                                 </div>
                             </div>
 
-                            <transition enter-active-class="transition duration-300 ease-out"
-                                enter-from-class="transform scale-95 opacity-0"
-                                enter-to-class="transform scale-100 opacity-100"
-                                leave-active-class="transition duration-200 ease-in"
-                                leave-from-class="transform scale-100 opacity-100"
-                                leave-to-class="transform scale-95 opacity-0">
-                                <div v-if="advancedSearch" class=" rounded-lg p-6 mb-6">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label class="block text-sm font-medium text-vw-dark-blue mb-2"
+                            <transition enter-active-class="transition ease-out duration-300"
+                                enter-from-class="opacity-0 transform scale-95 -translate-y-2"
+                                enter-to-class="opacity-100 transform scale-100 translate-y-0"
+                                leave-active-class="transition ease-in duration-200"
+                                leave-from-class="opacity-100 transform scale-100 translate-y-0"
+                                leave-to-class="opacity-0 transform scale-95 -translate-y-2">
+                                <div v-if="advancedSearch" class="bg-white rounded-lg shadow-lg p-6 mb-6 mt-4">
+                                    <h3 class="text-lg font-semibold text-vw-dark-blue mb-4">Búsqueda Avanzada</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-vw-dark-blue"
                                                 for="departamento">
                                                 Departamento
                                             </label>
-                                            <input v-model="departamento" id="departamento" type="text"
-                                                placeholder="Buscar por departamento"
-                                                class="w-full px-4 py-2 border border-vw-tin-grey rounded-md text-vw-dark-blue focus:outline-none focus:ring-2 focus:ring-vw-light-blue" />
+                                            <select v-model="departamento" id="departamento"
+                                                class="w-full px-4 py-2 border border-vw-tin-grey rounded-md text-vw-dark-blue focus:outline-none focus:ring-2 focus:ring-vw-light-blue transition duration-150 ease-in-out">
+                                                <option value="">Selecciona</option>
+                                                <option value="Ventas">Ventas</option>
+                                                <option value="Seminuevos">Seminuevos</option>
+                                                <option value="Servicio">Servicio</option>
+                                                <option value="Refacciones">Refacciones</option>
+                                            </select>
                                         </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-vw-dark-blue mb-2"
+
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-vw-dark-blue"
                                                 for="calificacion">
                                                 Calificación
                                             </label>
-                                            <input v-model="calificacion" id="calificacion" type="text"
-                                                placeholder="Buscar por calificación"
-                                                class="w-full px-4 py-2 border border-vw-tin-grey rounded-md text-vw-dark-blue focus:outline-none focus:ring-2 focus:ring-vw-light-blue" />
+                                            <select v-model="calificacion" id="calificacion"
+                                                class="w-full px-4 py-2 border border-vw-tin-grey rounded-md text-vw-dark-blue focus:outline-none focus:ring-2 focus:ring-vw-light-blue transition duration-150 ease-in-out">
+                                                <option value="">Selecciona</option>
+                                                <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
+                                            </select>
                                         </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-vw-dark-blue mb-2"
-                                                for="estado">
+
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-vw-dark-blue" for="estado">
                                                 Estado
                                             </label>
                                             <select v-model="estado" id="estado"
-                                                class="w-full px-4 py-2 border border-vw-tin-grey rounded-md text-vw-dark-blue focus:outline-none focus:ring-2 focus:ring-vw-light-blue">
+                                                class="w-full px-4 py-2 border border-vw-tin-grey rounded-md text-vw-dark-blue focus:outline-none focus:ring-2 focus:ring-vw-light-blue transition duration-150 ease-in-out">
                                                 <option value="">Selecciona estado</option>
                                                 <option value="activo">Activo</option>
                                                 <option value="finalizado">Finalizado</option>
                                             </select>
                                         </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-vw-dark-blue mb-2"
+
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-vw-dark-blue"
                                                 for="procedeQueja">
                                                 ¿Procede Queja?
                                             </label>
                                             <select v-model="procedeQueja" id="procedeQueja"
-                                                class="w-full px-4 py-2 border border-vw-tin-grey rounded-md text-vw-dark-blue focus:outline-none focus:ring-2 focus:ring-vw-light-blue">
+                                                class="w-full px-4 py-2 border border-vw-tin-grey rounded-md text-vw-dark-blue focus:outline-none focus:ring-2 focus:ring-vw-light-blue transition duration-150 ease-in-out">
                                                 <option value="">Selecciona</option>
                                                 <option value="si">Sí</option>
                                                 <option value="no">No</option>
                                             </select>
                                         </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-vw-dark-blue mb-2"
+
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-vw-dark-blue"
                                                 for="fechaEspecifica">
                                                 Fecha específica
                                             </label>
                                             <input type="month" v-model="fechaEspecifica" id="fechaEspecifica"
-                                                class="w-full px-4 py-2 border border-vw-tin-grey rounded-md text-vw-dark-blue focus:outline-none focus:ring-2 focus:ring-vw-light-blue" />
+                                                class="w-full px-4 py-2 border border-vw-tin-grey rounded-md text-vw-dark-blue focus:outline-none focus:ring-2 focus:ring-vw-light-blue transition duration-150 ease-in-out" />
                                         </div>
-                                        <div v-if="fechaEspecifica">
-                                            <label class="block text-sm font-medium text-vw-dark-blue mb-2"
+
+                                        <div v-if="fechaEspecifica" class="space-y-2">
+                                            <label class="block text-sm font-medium text-vw-dark-blue"
                                                 for="fechaSeleccionada">
                                                 Rango de Fecha de Queja
                                             </label>
                                             <select v-model="fechaSeleccionada" id="fechaSeleccionada"
-                                                class="w-full px-4 py-2 border border-vw-tin-grey rounded-md text-vw-dark-blue focus:outline-none focus:ring-2 focus:ring-vw-light-blue">
+                                                class="w-full px-4 py-2 border border-vw-tin-grey rounded-md text-vw-dark-blue focus:outline-none focus:ring-2 focus:ring-vw-light-blue transition duration-150 ease-in-out">
                                                 <option value="">Todas</option>
-                                                <!-- <option value="1_mes">Último mes</option> -->
                                                 <option value="3_meses">Últimos 3 meses</option>
                                                 <option value="6_meses">Últimos 6 meses</option>
                                                 <option value="1_año">Último año</option>
-                                                <!-- <option value="anteriores">Años anteriores</option> -->
                                             </select>
                                         </div>
                                     </div>
-                                    <button @click="limpiarFiltros"
-                                        class="px-4 py-2 mt-6 bg-vw-dark-blue text-white rounded hover:bg-vw-light-blue transition duration-300">
-                                        Limpiar Filtros
-                                    </button>
+
+                                    <div class="mt-6 flex justify-end">
+                                        <button @click="limpiarFiltros"
+                                            class="px-6 py-2 bg-vw-dark-blue text-white rounded-md hover:bg-vw-light-blue transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-vw-light-blue focus:ring-opacity-50">
+                                            Limpiar Filtros
+                                        </button>
+                                    </div>
                                 </div>
                             </transition>
 
@@ -297,6 +292,12 @@ console.log('Reportes:', props.reporte);
                 </div>
             </div>
 
+            <!-- <div class="p-6">
+                <div class="bg-white shadow-lg rounded-lg p-4 text-center text-vw-dark-blue font-vwtext">
+                    Total de registros: {{ filteredReportes.length }}
+                </div>
+            </div> -->
+
             <div class="p-6">
                 <div v-if="noHayReportes"
                     class="bg-white shadow-lg rounded-lg p-6 text-center text-vw-dark-blue font-vwtext">
@@ -304,6 +305,7 @@ console.log('Reportes:', props.reporte);
                 </div>
                 <div v-else class="bg-white shadow-lg rounded-lg overflow-hidden">
                     <div class="overflow-x-auto">
+                        <!-- <span class="text-end items-end justify-end w-full">Total de registros: {{ filteredReportes.length }}</span> -->
                         <table class="min-w-full divide-y divide-vw-tin-grey">
                             <thead class="bg-vw-sky-blue">
                                 <tr>
@@ -345,11 +347,8 @@ console.log('Reportes:', props.reporte);
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <Link :href="`/reporte/${infoReporte.id}`"
-                                            class="text-vw-light-blue hover:text-vw-dark-blue mr-2">Ver</Link>
-                                        <!-- <button v-if="infoReporte.estado"
-                                            class="text-vw-lake-blue hover:text-vw-dark-blue mr-2">Editar</button> -->
-                                        <button @click="openDeleteModal(infoReporte)"
-                                            class="text-red-600 hover:text-red-900">Eliminar</button>
+                                            class="text-vw-light-blue hover:text-vw-dark-blue mr-2">Ver reporte</Link>
+
                                     </td>
                                 </tr>
                             </tbody>
@@ -365,65 +364,9 @@ console.log('Reportes:', props.reporte);
                             class="px-4 py-2 bg-vw-dark-blue text-white rounded hover:bg-vw-light-blue transition duration-300 disabled:opacity-50 ml-5">
                             Siguiente
                         </button>
-                        <!-- <button @click="currentPage = 1" :disabled="currentPage === 1"
-                            class="px-4 py-2 bg-vw-dark-blue text-white rounded hover:bg-vw-light-blue transition duration-300 ml-5 disabled:opacity-50">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-undo-2"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
-                        </button> -->
                     </div>
                 </div>
             </div>
-
-            <!-- Modal de confirmación de eliminación -->
-            <transition enter-active-class="ease-out duration-300" enter-from-class="opacity-0"
-                enter-to-class="opacity-100" leave-active-class="ease-in duration-200" leave-from-class="opacity-100"
-                leave-to-class="opacity-0">
-                <div v-if="showDeleteModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title"
-                    role="dialog" aria-modal="true">
-                    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true">
-                        </div>
-
-                        <span class="hidden sm:inline-block sm:align-middle sm:h-screen"
-                            aria-hidden="true">&#8203;</span>
-
-                        <div
-                            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                <div class="sm:flex sm:items-start">
-                                    <div
-                                        class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                                        <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                        </svg>
-                                    </div>
-                                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                                        <h3 class="text-lg leading-6 font-medium text-vw-dark-blue" id="modal-title">
-                                            Eliminar reporte</h3>
-                                        <div class="mt-2">
-                                            <p class="text-sm text-vw-tin-grey">
-                                                ¿Estás seguro de que deseas eliminar este reporte? Esta acción no se
-                                                puede deshacer.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-vw-light-grey px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                                <button @click="deleteReporte" type="button"
-                                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
-                                    Eliminar
-                                </button>
-                                <button @click="closeDeleteModal" type="button"
-                                    class="mt-3 w-full inline-flex justify-center rounded-md border border-vw-tin-grey shadow-sm px-4 py-2 bg-white text-base font-medium text-vw-dark-blue hover:bg-vw-light-grey focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vw-light-blue sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                                    Cancelar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </transition>
         </AuthenticatedLayout>
     </div>
 </template>

@@ -13,7 +13,11 @@ return new class extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
 
+            // La tabla reports tiene los siguientes campos, este sera un registro de una queja
+
             $table->id(); // ID autoincremental
+
+            // Información del reporte
             $table->string('numFolio')->unique(); // Número de folio único
             $table->string('departamento')->index(); // Departamento del reporte
             $table->integer('calificacion')->index(); // Calificación de 1 a 5
@@ -22,6 +26,8 @@ return new class extends Migration
             $table->date('fechaIngreso')->nullable(); // Fecha de ingreso, puede ser nula
             $table->string('formaDeteccion')->index(); // Forma de detección (select)
             $table->string('redSocial')->nullable(); // Red social, puede ser nula
+
+            // Información del cliente
             $table->string('nomCliente'); // Nombre del cliente
             $table->string('celularCliente'); // Número de celular del cliente
             $table->string('emailCliente'); // Correo electrónico del cliente
@@ -32,17 +38,20 @@ return new class extends Migration
             $table->string('noOrden'); // Número de orden
             $table->string('vin'); // Número de identificación del vehículo (VIN)
             $table->string('tecnico'); // Nombre del técnico
-            $table->text('reclamacion'); // Texto de la reclamación
-            $table->string('tipoReclamacion'); // Tipo de reclamación (select)
-            $table->string('otroTipoReclamacion')->nullable(); // Otro tipo de reclamación, puede ser nulo
+            $table->text('reclamacion'); // Texto de la reclamación del cliente
+            $table->string('tipoReclamacion'); // Tipo de reclamación que se presento es un select
+            $table->string('otroTipoReclamacion')->nullable(); // Otro tipo de reclamación en caso de sea otro
             $table->json('causaRaiz')->nullable(); // Causa raíz (array JSON)
             $table->json('medidas'); // Medidas (array JSON)
-            $table->boolean('procedeQueja')->index(); // Si procede la queja o no (boolean)
+            $table->boolean('procedeQueja')->index(); // Si procedio la queja o no (boolean)
             $table->text('solucion')->nullable(); // Texto con la solución del reporte
+
+            // Información de seguimiento
             $table->string('nombreCierre')->nullable(); // Nombre del personal que cerró la reclamación
             $table->date('fechaCierre')->index()->nullable(); // Fecha de cierre de la reclamación
-            $table->string('nombreSeguimiento')->nullable(); // Nombre del personal de seguimiento
+            $table->string('nombreSeguimiento')->nullable(); // Nombre del personal que hizo el seguimiento
             $table->date('fechaSeguimiento')->nullable(); // Fecha del seguimiento
+
             $table->text('comentariosCliente')->nullable(); // Comentarios del cliente, puede ser nulo
 
 
