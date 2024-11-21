@@ -25,7 +25,7 @@ const cardData = [
     { title: 'Total de Reportes', value: props.totalReportes, icon: FileText, color: 'bg-blue-500', textColor: 'text-blue-600' },
     { title: 'Porcentaje de quejas que procedieron', value: `${props.porcentajeProcedentes}%`, icon: PercentIcon, color: 'bg-green-500', textColor: 'text-green-600' },
     { title: 'Calificación Promedio quejas ', value: props.calificacionPromedio.toFixed(1), icon: Star, color: 'bg-yellow-500', textColor: 'text-yellow-600' },
-    { title: 'Tiempo Promedio de Resolución', value: `${props.tiempoResolucion} días`, icon: Clock, color: 'bg-purple-500', textColor: 'text-purple-600' },
+    { title: 'Tiempo Promedio de Resolución de una queja', value: `${props.tiempoResolucion} días`, icon: Clock, color: 'bg-purple-500', textColor: 'text-purple-600' },
 ];
 </script>
 
@@ -46,7 +46,7 @@ const cardData = [
                         class="card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
                         <div class="p-6">
                             <h3 class="text-sm font-medium text-gray-500 mb-2 h-10 overflow-hidden text-center"
-                                style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{
+                                style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-clamp: 2;">{{
                                 card.title
                                 }}</h3>
                             <div class="flex items-center justify-center h-10">
