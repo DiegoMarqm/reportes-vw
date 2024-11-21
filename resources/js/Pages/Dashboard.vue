@@ -33,14 +33,14 @@ const cardData = [
 
     <Head title="Dashboard" />
 
-    <AuthenticatedLayout>
+    <AuthenticatedLayout class="font-vwtext">
         <template #header>
-            <h1 class="text-3xl font-bold text-gray-800">Dashboard {{ obtenerYearActual() }}</h1>
+            <h1 class="text-3xl font-vwheadbold text-gray-800">Dashboard {{ obtenerYearActual() }}</h1>
         </template>
 
         <div class="p-6 bg-gray-100">
             <div class="dashboard-info mb-8">
-                <h2 class="text-2xl font-bold mb-6 text-gray-700">Información General</h2>
+                <h2 class="text-2xl font-bold mb-6 text-gray-700 font-vwheadbold">Información General</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div v-for="(card, index) in cardData" :key="index"
                         class="card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">

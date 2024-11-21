@@ -189,7 +189,7 @@ function confirmDelete() {
 
     <Head title="Reporte Show" />
 
-    <AuthenticatedLayout>
+    <AuthenticatedLayout class="font-vwtext">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight flex items-center font-vwheadbold ml-8"
                 style="color: rgb(0, 30, 80);">
