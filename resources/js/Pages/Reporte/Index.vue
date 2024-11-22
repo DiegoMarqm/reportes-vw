@@ -12,7 +12,7 @@ const props = defineProps({
 
 // PAginate
 const currentPage = ref(1);
-const pageSize = ref(2);
+const pageSize = ref(10);
 
 const paginatedReportes = computed(() => {
     const start = (currentPage.value - 1) * pageSize.value;

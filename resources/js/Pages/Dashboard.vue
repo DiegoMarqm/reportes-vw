@@ -35,7 +35,7 @@ const cardData = [
 
     <AuthenticatedLayout class="font-vwtext">
         <template #header>
-            <h1 class="text-3xl font-vwheadbold text-gray-800">Dashboard {{ obtenerYearActual() }}</h1>
+            <h1 class="text-3xl font-vwheadbold text-gray-800">Tablero {{ obtenerYearActual() }}</h1>
         </template>
 
         <div class="p-6 bg-gray-100">

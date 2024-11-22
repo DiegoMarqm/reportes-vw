@@ -80,7 +80,7 @@ class EmpleadoController extends Controller
         // Quiero que agreguemos lo siguiente:
 
         //Quejas por departamento: Gráfico de barras para mostrar cuántas quejas se registraron en cada departamento.
-        
+
 
         //Calificaciones por departamento: Gráfico de barras para mostrar el promedio de calificaciones por departamento.
 
@@ -93,8 +93,10 @@ class EmpleadoController extends Controller
         return Inertia::render('Dashboard', [
             'totalReportes' => $totalReportes,
             'porcentajeProcedentes' => round($porcentajeProcedentes, 2),
-            'calificacionPromedio' => round($calificacionPromedio, 2),
-            'tiempoResolucion' => round($tiempoResolucion, 2),
+            'calificacionPromedio' => round($calificacionPromedio),
+            // 'calificacionPromedioDecimal' => round($calificacionPromedio, 2),
+            'tiempoResolucion' => round($tiempoResolucion),
+            // 'tiempoResolucion' => round($tiempoResolucion, 2),
             'quejasPorMes' => $quejasData,
             'calificacionesPorMes' => $calificacionesData,
             'cierrePorMes' => $cierreData,

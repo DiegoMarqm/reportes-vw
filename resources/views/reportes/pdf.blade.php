@@ -1302,8 +1302,9 @@
                     <div class="nom">
                         <p class="pnombre">Nombre:</p>
                         <div
-                            style="background-color: #abdade; margin-left: 8px; height: 25px; position: relative; bottom: 15px;">
-                            <p style="position: relative; right: 100px; top: 4px; margin-left: 40px;">
+                            style="background-color: #abdade; height: 25px; position: relative; bottom: 15px;">
+
+                            <p style="position: relative; top: 4px; margin-left: 40px; width: 95%; right: 38px; text-align: start;">
                                 {{ $reporte->nombreCierre }}</p>
                         </div>
                     </div>
@@ -1350,17 +1351,19 @@
                 <div class="nomfechaSeg">
                     <div class="nomSeg">
                         <p class="pnombreSeg">Nombre:</p>
+
                         <div
-                            style="background-color: #abdade; margin-left: 8px; height: 25px; position: relative; bottom: 15px;">
-                            <p style="position: relative; right: 100px; top: 4px; margin-left: 40px;">
-                                {{ $reporte->nombreCierre }}</p>
+                            style="background-color: #abdade; height: 25px; position: relative; bottom: 15px;">
+
+                            <p style="position: relative; top: 4px; margin-left: 40px; width: 95%; right: 38px; text-align: start;">
+                                {{ $reporte->nombreSeguimiento }}</p>
                         </div>
                     </div>
                     <div class="fechaSeg">
                         <p class="pfechaSeg">Fecha:</p>
                         <div
                             style="background-color: #abdade; margin-left: 8px; height: 25px; position: relative; bottom: 15px;">
-                            <p style="position: relative; right: 80px; top: 4px;">{{ $reporte->fechaCierre }}</p>
+                            <p style="position: relative; right: 80px; top: 4px;">{{ $reporte->fechaSeguimiento }}</p>
                         </div>
                     </div>
                 </div>
