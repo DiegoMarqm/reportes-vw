@@ -110,6 +110,9 @@ function renderChart() {
                             size: 12,
                         },
                         color: '#666',
+                        callback:  function(value) {
+                            return Number.isInteger(value) ? value : '';
+                        }
                     },
                 },
             },

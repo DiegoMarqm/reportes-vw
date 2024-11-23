@@ -56,7 +56,7 @@ Route::middleware('auth')->group(function () {
     // Agrega la ruta para descargar las evidencias
     Route::get('/reporte/{id}/evidencias/descargar', [ReporteController::class, 'descargarEvidencias'])->name('reporte.descargarEvidencias');
     // Ruta para ver el pdf
-    Route::get('/reporte/{id}/pdf', [ReporteController::class, 'verPDF'])->name('reporte.verPDF');
+    Route::get('/reporte/{id}/pdf/{numFolio}', [ReporteController::class, 'verPDF'])->name('reporte.verPDF');
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');
 

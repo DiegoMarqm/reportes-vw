@@ -42,6 +42,7 @@ class ReporteController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
 
         $validatedData = $request->validate([
             'numFolio' => 'required|string',
@@ -95,7 +96,7 @@ class ReporteController extends Controller
 
         $reporte->save();
 
-        return redirect()->route('reporte.index');
+        return redirect()->back()->with('success', 'Reporte creado correctamente');
     }
 
     public function editReporte($id)
@@ -159,7 +160,7 @@ class ReporteController extends Controller
 
             $reporte->update($validatedData);
 
-            return redirect()->route('reporte.index')->with('success', 'Reporte actualizado correctamente');
+            return redirect()->back()->with('success', 'Reporte actualizado correctamente');
         } else {
             return redirect()->route('reporte.index')->with('error', 'Reporte no encontrado');
         }
@@ -173,11 +174,11 @@ class ReporteController extends Controller
 
         $carpetaEvidencias = 'evidencias/' . $reporte->numFolio;
 
-        if (Storage::disk('public')->exists($pdfPath)) {
+        if ($pdfPath && Storage::disk('public')->exists($pdfPath)) {
             Storage::disk('public')->delete($pdfPath);
         }
 
-        if (Storage::disk('public')->exists($carpetaEvidencias)) {
+        if ($carpetaEvidencias && Storage::disk('public')->exists($carpetaEvidencias)) {
             Storage::disk('public')->deleteDirectory($carpetaEvidencias);
         }
 

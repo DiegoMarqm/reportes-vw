@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import { CheckCircleIcon } from 'lucide-vue-next';
 
 const props = defineProps({
     empleados: {
@@ -488,10 +489,10 @@ console.log(props.empleados);
                                     <td class="border border-gray-300 px-4 py-2">
                                         <input type="text" v-model="medida.medida"
                                             class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                            placeholder="Especificar medida">
+                                            placeholder="Especificar medida" required>
                                     </td>
                                     <td class="border border-gray-300 px-4 py-2">
-                                        <select v-model="medida.responsable"
+                                        <select v-model="medida.responsable" required
                                             class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                             <option value="" disabled selected>Seleccionar...</option>
                                             <option v-for="empleado in asesores" :key="empleado.id"
@@ -500,7 +501,7 @@ console.log(props.empleados);
                                         </select>
                                     </td>
                                     <td class="border border-gray-300 px-4 py-2">
-                                        <input type="date" v-model="medida.fecha"
+                                        <input type="date" v-model="medida.fecha" required
                                             class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     </td>
                                     <td class="border border-gray-300 px-4 py-2">
@@ -658,12 +659,21 @@ console.log(props.empleados);
         </div>
 
         <!-- Modal de éxito -->
-        <div v-if="showModal" class="fixed inset-0 flex items-center justify-center z-50">
-            <div class="bg-white rounded-lg p-8 shadow-xl">
-                <div class="text-2xl font-bold mb-4 text-green-600">¡Éxito!</div>
-                <p class="text-gray-700">El reporte ha sido actializado.</p>
+        <transition enter-active-class="transition ease-out duration-300"
+            enter-from-class="opacity-0 transform scale-90" enter-to-class="opacity-100 transform scale-100"
+            leave-active-class="transition ease-in duration-300" leave-from-class="opacity-100 transform scale-100"
+            leave-to-class="opacity-0 transform scale-90">
+            <div v-if="showModal" class="fixed inset-0 flex items-center justify-center z-50">
+                <div class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+                <div class="bg-white rounded-lg p-8 shadow-xl z-10 max-w-md w-full m-4">
+                    <div class="flex items-center justify-center mb-4 text-green-600">
+                        <CheckCircleIcon size="48" class="animate-bounce" />
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-center text-gray-900">¡Éxito!</h3>
+                    <p class="text-gray-700 text-center">El reporte se ha actualizado correctamente.</p>
+                </div>
             </div>
-        </div>
+        </transition>
 
 
 
@@ -673,13 +683,21 @@ console.log(props.empleados);
 </template>
 
 <style scoped>
-.fixed {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    /* Fondo semi-transparente */
+@keyframes bounce {
+
+0%,
+100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+}
+
+50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+}
+
+.animate-bounce {
+animation: bounce 1s infinite;
 }
 </style>

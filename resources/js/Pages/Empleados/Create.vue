@@ -81,7 +81,7 @@ const add = () => {
                     </Link>
 
                     <button type="submit"
-                        class="px-4 py-2 bg-sky-500 text-white rounded-md hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition-colors duration-300 flex items-center"
+                        class="px-4 py-2 bg-sky-500 text-white rounded-md hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition-colors duration-300 flex items-center"
                         :disabled="isLoading">
                         <span v-if="isLoading" class="mr-2">
                             <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"

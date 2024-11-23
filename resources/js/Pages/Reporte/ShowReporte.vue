@@ -74,7 +74,7 @@ function eliminarEvidencia(index) {
         formEvidencia.delete(route('reporte.eliminarEvidencia', { id: props.reporte.id, index: index }), {
             preserveScroll: true,
             onSuccess: () => {
-                location.reload();
+                // location.reload();
             }
         });
     }
@@ -100,8 +100,12 @@ function descargarEvidencias() {
     window.open(route('reporte.descargarEvidencias', props.reporte.id), '_blank');
 }
 
-function verPDF() {
-    window.open(route('reporte.verPDF', props.reporte.id), '_blank');
+function verPDF(numFolio) {
+    // Concatenar Reporte + numFolio para abrir el PDF correcto ejemplo Reporte-1.pdf
+    const numFolioC = "Reporte " + props.reporte.numFolio;
+
+
+    window.open(route('reporte.verPDF', { id: props.reporte.id, numFolio: numFolioC }), '_blank');
 }
 
 
@@ -492,7 +496,7 @@ function confirmDelete() {
                                                         props.reporte.reportePDF }}</p>
                                                     <div class="flex space-x-3">
                                                         <!-- Boton para ver el PDF -->
-                                                        <button @click="verPDF"
+                                                        <button @click="verPDF(props.reporte.numFolio)"
                                                             class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition duration-300 ease-in-out">
                                                             Ver
                                                         </button>

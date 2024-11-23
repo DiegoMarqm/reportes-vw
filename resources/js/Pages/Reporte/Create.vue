@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import { CheckCircleIcon } from 'lucide-vue-next';
 
 const props = defineProps({
     empleados: {
@@ -67,8 +68,6 @@ const form = useForm({
 });
 
 
-const showModal = ref(false);
-
 const agregarMedida = () => {
     form.medidas.push({
         medida: '',
@@ -81,36 +80,44 @@ const removeMedida = (index) => {
     form.medidas.splice(index, 1);
 };
 
-
+const showModal = ref(false);
+const cargandoEnvio = ref(false);
 
 const add = () => {
+
+    cargandoEnvio.value = true;
     form.post(route('reporte.store'), {
-        onProgress: () => {
-            form.processing = true;
-            console.log("Enviando formulario");
-        },
+
         onSuccess: () => {
             form.reset();
+            cargandoEnvio.value = false;
             showModal.value = true;
+            console.log("showModal", showModal.value);
 
             console.log("Formulario enviado con éxito");
 
             setTimeout(() => {
                 showModal.value = false;
                 window.location.href = route('reporte.index');
-            }, 1500);
+            }, 2000);
         },
 
         onError: () => {
             console.log("Error al enviar el formulario");
+            cargandoEnvio.value = false;
         },
 
     });
 };
+
 const limpiarFormulario = () => {
     form.reset();
     // window.location.reload();
 };
+
+
+
+
 
 </script>
 
@@ -636,7 +643,19 @@ const limpiarFormulario = () => {
                         class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 mr-2">Cancelar
                     </Link>
 
-                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Enviar
+                    <button type="submit" class="px-4 py-2 bg-sky-500 text-white rounded-md hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition-colors duration-300 flex items-center" :disabled="cargandoEnvio">
+                        <span v-if="cargandoEnvio" class="mr-2">
+                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4">
+                                </circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                        </span>
+                        {{ cargandoEnvio ? 'Enviando...' : 'Enviar' }}
                     </button>
                 </div>
             </form>
@@ -648,29 +667,43 @@ const limpiarFormulario = () => {
         </div>
 
         <!-- Modal de éxito -->
-        <div v-if="showModal" class="fixed inset-0 flex items-center justify-center z-50">
-            <div class="bg-white rounded-lg p-8 shadow-xl">
-                <div class="text-2xl font-bold mb-4 text-green-600">¡Éxito!</div>
-                <p class="text-gray-700">El formulario se ha enviado correctamente.</p>
+        <transition enter-active-class="transition ease-out duration-300"
+            enter-from-class="opacity-0 transform scale-90" enter-to-class="opacity-100 transform scale-100"
+            leave-active-class="transition ease-in duration-300" leave-from-class="opacity-100 transform scale-100"
+            leave-to-class="opacity-0 transform scale-90">
+            <div v-if="showModal" class="fixed inset-0 flex items-center justify-center z-50">
+                <div class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+                <div class="bg-white rounded-lg p-8 shadow-xl z-10 max-w-md w-full m-4">
+                    <div class="flex items-center justify-center mb-4 text-green-600">
+                        <CheckCircleIcon size="48" class="animate-bounce" />
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-center text-gray-900">¡Éxito!</h3>
+                    <p class="text-gray-700 text-center">El reporte se ha añadido.</p>
+                </div>
             </div>
-        </div>
-
-
-
-
+        </transition>
 
     </AuthenticatedLayout>
 </template>
 
 <style scoped>
-.fixed {
-    
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    /* Fondo semi-transparente */
+
+
+@keyframes bounce {
+
+0%,
+100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+}
+
+50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+}
+
+.animate-bounce {
+animation: bounce 1s infinite;
 }
 </style>

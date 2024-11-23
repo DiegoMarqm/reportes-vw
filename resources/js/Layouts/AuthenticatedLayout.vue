@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div class="flex h-screen bg-gray-50">
+
+    <Splash v-if="showSplash" />
+
+    <div class="flex h-screen bg-gray-50" v-else>
       <Navigation />
       <NavigationMobile />
 
@@ -25,4 +28,22 @@
 import Navigation from './Navigation.vue';
 import TopMenu from "./TopMenu.vue";
 import NavigationMobile from './NavigationMobile.vue';
+
+import Splash from '../Components/Splash.vue';
+import { ref, onMounted } from 'vue';
+
+
+const showSplash = ref(true);
+
+onMounted(() => {
+    if (localStorage.getItem('splashShown')) {
+        showSplash.value = false;
+    } else {
+        setTimeout(() => {
+            showSplash.value = false;
+            localStorage.setItem('splashShown', 'true');
+        }, 3000);
+    }
+});
+
 </script>

@@ -31,7 +31,7 @@ const cardData = [
 
 <template>
 
-    <Head title="Dashboard" />
+    <Head title="Tablero" />
 
     <AuthenticatedLayout class="font-vwtext">
         <template #header>

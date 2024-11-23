@@ -55,10 +55,10 @@ function handleImageError() {
 onMounted(() => {
     if (props.auth.user) {
         window.location.href = route('dashboard');
+    }else{
+        localStorage.removeItem('splashShown');
     }
-    // else{
-    //     console.log('no hay usuario logeado')
-    // }
+
 });
 
 </script>
