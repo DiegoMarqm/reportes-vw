@@ -12,6 +12,7 @@ const props = defineProps({
 
 const form = useForm({
     nombre: '',
+    departamento: '',
     rol: '',
 });
 
@@ -63,6 +64,20 @@ const add = () => {
                 </div>
 
                 <div class="mb-6">
+                    <label for="rol" class="block text-sm font-medium text-gray-700 mb-2">Departamento</label>
+                    <select id="rol" v-model="form.departamento"
+                        class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500">
+                        <option value="" disabled selected>Selecciona un departamento</option>
+                        <!-- <option value="Administrador">Administrador</option> -->
+                        <option value="Ventas">Ventas</option>
+                        <option value="Servicio">Servicio</option>
+                        <option value="Refacciones">Refacciones</option>
+                        <option value="Seminuevos">Seminuevos</option>
+                        <!-- <option value="Personal">Personal</option> -->
+                    </select>
+                </div>
+
+                <div class="mb-6">
                     <label for="rol" class="block text-sm font-medium text-gray-700 mb-2">Rol</label>
                     <select id="rol" v-model="form.rol"
                         class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500">
@@ -70,6 +85,7 @@ const add = () => {
                         <!-- <option value="Administrador">Administrador</option> -->
                         <option value="Asesor">Asesor</option>
                         <option value="Tecnico">Técnico</option>
+                        <option value="Gerente">Gerente</option>
                         <!-- <option value="Personal">Personal</option> -->
                     </select>
                 </div>

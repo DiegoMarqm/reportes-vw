@@ -7,7 +7,7 @@ onMounted(() => {
     // Ocultar el splash después de 3 segundos
     setTimeout(() => {
         isVisible.value = false;
-    }, 3000);
+    }, 2500);
 });
 </script>
 

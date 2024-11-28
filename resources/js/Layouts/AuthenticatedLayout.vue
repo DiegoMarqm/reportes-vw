@@ -42,7 +42,7 @@ onMounted(() => {
         setTimeout(() => {
             showSplash.value = false;
             localStorage.setItem('splashShown', 'true');
-        }, 3000);
+        }, 2500);
     }
 });
 

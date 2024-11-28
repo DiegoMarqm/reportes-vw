@@ -58,7 +58,7 @@ const eliminarEmpleado = () => {
             </Link>
         </div>
 
-        <div class="p-6 space-y-8 font-vwtext" >
+        <!-- <div class="p-6 space-y-8 font-vwtext" >
             <div v-for="(empleadosPorRol, rol) in empleados" :key="rol"
                  class="bg-white rounded-lg shadow-md overflow-hidden">
                 <h2 class="text-lg font-vwheadbold p-4 bg-gray-50 border-b">{{ rol }}</h2>
@@ -85,6 +85,43 @@ const eliminarEmpleado = () => {
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div> -->
+
+        <div class="p-6 space-y-8 font-vwtext">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <h2 class="text-lg font-vwheadbold p-4 bg-gray-50 border-b">Todos los Empleados</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Departamento</th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr v-for="empleado in Object.values(empleados).flat()" :key="empleado.id" class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                        <div class="text-sm font-medium text-gray-900">{{ empleado.nombre }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                        <div class="text-sm text-gray-500">{{ empleado.departamento }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                        <div class="text-sm text-gray-500">{{ empleado.rol }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                        <button @click="openConfirmModal(empleado)"
+                            class="text-red-600 hover:text-red-900 focus:outline-none focus:underline">
+                        <TrashIcon class="w-5 h-5" />
+                        </button>
+                    </td>
+                    </tr>
+                </tbody>
+                </table>
+            </div>
             </div>
         </div>
 

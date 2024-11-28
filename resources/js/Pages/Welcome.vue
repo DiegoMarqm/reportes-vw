@@ -69,7 +69,7 @@ onMounted(() => {
         <Head title="Login"></Head>
         <div class="flex flex-col overflow-y-auto md:flex-row font-vwtext">
             <div class="h-44 md:h-auto md:w-1/2">
-				<img aria-hidden="true" class="object-cover w-full h-full" src="https://vw-huasteca.com.mx/Assets/ModelosNuevos/PortaHome/web_1920x720.jpg" alt="Office" />
+                <img aria-hidden="true" class="object-cover w-full h-full " src="/images/loginvw.jpg" alt="Office" />
 			</div>
 
             <div class="flex items-center justify-center p-6 sm:p-12 md:w-1/2">
@@ -83,9 +83,9 @@ onMounted(() => {
                     <form @submit.prevent="submit">
                         <div class="mt-4">
                             <InputLabel for="email" value="Usuario" />
-                            <TextInput id="email" type="email" class="block w-full mt-1" v-model="form.email" required
+                            <TextInput id="email" type="text" class="block w-full mt-1" v-model="form.email"
                                 autofocus autocomplete="username" />
-                            <InputError class="mt-2" :message="form.errors.email" />
+                            <!-- <InputError class="mt-2" :message="form.errors.email" /> -->
                         </div>
 
                         <div class="mt-4">

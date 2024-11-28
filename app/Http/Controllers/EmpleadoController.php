@@ -112,7 +112,9 @@ class EmpleadoController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
+            'departamento' => 'required|string|max:255',
             'rol' => 'required|string|max:255',
+
         ]);
 
         //

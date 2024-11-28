@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { CheckCircleIcon } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -10,15 +10,6 @@ const props = defineProps({
         required: true
     }
 });
-
-const asesores = computed(() => {
-    return props.empleados.filter(empleado => empleado.rol === 'Asesor');
-});
-
-const tecnicos = computed(() => {
-    return props.empleados.filter(empleado => empleado.rol === 'Tecnico');
-});
-
 
 
 // Inicializamos el formulario con los campos adicionales
@@ -116,6 +107,28 @@ const limpiarFormulario = () => {
 };
 
 
+const departamentoSeleccionado = ref('');
+
+const empleadosFiltrados = ref([]);
+
+watch(() => form.departamento, (newDepartamento) => {
+    empleadosFiltrados.value = props.empleados.filter(empleado => empleado.departamento === newDepartamento);
+    console.log('Empleados filtrados:', empleadosFiltrados.value); // Agrega esta línea para ver los empleados filtrados
+});
+
+const asesores = computed(() => {
+    return empleadosFiltrados.value.filter(empleado => empleado.rol === 'Asesor');
+});
+
+const tecnicos = computed(() => {
+    return empleadosFiltrados.value.filter(empleado => empleado.rol === 'Tecnico');
+});
+
+const gerentes = computed(() => {
+    return empleadosFiltrados.value.filter(empleado => empleado.rol == 'Gerente');
+})
+
+console.log(asesores);
 
 
 
@@ -565,7 +578,7 @@ const limpiarFormulario = () => {
                                     class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <option value="" disabled selected>Seleccionar...</option>
                                     <!-- Ciclo para obtener los empleados -->
-                                    <option v-for="empleado in empleados" :key="empleado.id" :value="empleado.nombre">
+                                    <option v-for="empleado in gerentes" :key="empleado.id" :value="empleado.nombre">
                                         {{ empleado.nombre }}
                                     </option>
                                 </select>
@@ -599,7 +612,7 @@ const limpiarFormulario = () => {
                                     class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <option value="" disabled selected>Seleccionar...</option>
                                     <!-- Ciclo para obtener los empleados -->
-                                    <option v-for="empleado in empleados" :key="empleado.id" :value="empleado.nombre">
+                                    <option v-for="empleado in gerentes" :key="empleado.id" :value="empleado.nombre">
                                         {{ empleado.nombre }}
                                     </option>
                                 </select>
