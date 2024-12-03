@@ -102,12 +102,12 @@ class ReporteController extends Controller
     public function editReporte($id)
     {
         $reporte = Report::find($id);
-        $empleados = Empleado::all();
+        $empleado = Empleado::all();
 
         if ($reporte) {
             return Inertia::render('Reporte/Edit', [
                 'reporte' => $reporte,
-                'empleados' => $empleados
+                'empleado' => $empleado
             ]);
         } else {
             return redirect()->route('reporte.index')->with('error', 'Reporte no encontrado');

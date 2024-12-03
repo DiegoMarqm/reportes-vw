@@ -1,11 +1,11 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { CheckCircleIcon } from 'lucide-vue-next';
 
 const props = defineProps({
-    empleados: {
+    empleado: {
         type: Array,
         required: true
     },
@@ -17,18 +17,25 @@ const props = defineProps({
 });
 
 
-console.log(props.reporte);
-
-
-//obtener el nombre de los asesores
+// Obtener asesores, texnicos y gerentes dependiendo del departamento
 const asesores = computed(() => {
-    return props.empleados.filter(empleado => empleado.rol === 'Asesor');
+    return props.empleado.filter(empleado => empleado.departamento === props.reporte.departamento && empleado.rol === 'Asesor');
 });
 
-//obtener el nombre de los tecnicos
 const tecnicos = computed(() => {
-    return props.empleados.filter(empleado => empleado.rol === 'Tecnico');
+    return props.empleado.filter(empleado => empleado.departamento === props.reporte.departamento && empleado.rol === 'Tecnico');
 });
+
+const asesoresTecnicos = computed(() => {
+    return props.empleado.filter(empleado => empleado.departamento === props.reporte.departamento && (empleado.rol === 'Asesor' || empleado.rol === 'Tecnico'));
+});
+
+const gerentes = computed(() => {
+    return props.empleado.filter(empleado => empleado.departamento === props.reporte.departamento && empleado.rol === 'Gerente');
+});
+
+
+
 
 
 
@@ -100,13 +107,10 @@ const editReporte = () => {
     form.put(route('reporte.update', props.reporte.id), {
         onProgress: () => {
             form.processing = true;
-            console.log("Enviando formulario");
         },
         onSuccess: () => {
             form.reset();
             showModal.value = true;
-
-            console.log("Formulario enviado con éxito");
 
             setTimeout(() => {
                 showModal.value = false;
@@ -121,8 +125,6 @@ const editReporte = () => {
 };
 
 
-//ver la informacion del objeto empleados
-console.log(props.empleados);
 
 </script>
 
@@ -153,7 +155,7 @@ console.log(props.empleados);
                     <div>
                         <label for="departamento" class="block text-gray-700">Departamento</label>
                         <select v-model="form.departamento" id="departamento" name="departamento"
-                            class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" disabled>
                             <option value="" disabled>Seleccione un departamento</option>
                             <option value="Ventas">Ventas</option>
                             <option value="Servicio">Servicio</option>
@@ -495,7 +497,7 @@ console.log(props.empleados);
                                         <select v-model="medida.responsable" required
                                             class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                             <option value="" disabled selected>Seleccionar...</option>
-                                            <option v-for="empleado in asesores" :key="empleado.id"
+                                            <option v-for="empleado in asesoresTecnicos" :key="empleado.id"
                                                 :value="empleado.nombre">{{
                                                     empleado.nombre }}</option>
                                         </select>
@@ -570,7 +572,7 @@ console.log(props.empleados);
                                     class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <option value="" disabled selected>Seleccionar...</option>
                                     <!-- Ciclo para obtener los empleados -->
-                                    <option v-for="empleado in empleados" :key="empleado.id" :value="empleado.nombre">
+                                    <option v-for="empleado in gerentes" :key="empleado.id" :value="empleado.nombre">
                                         {{ empleado.nombre }}
                                     </option>
                                 </select>
@@ -605,7 +607,7 @@ console.log(props.empleados);
                                     class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <option value="" disabled selected>Seleccionar...</option>
                                     <!-- Ciclo para obtener los empleados -->
-                                    <option v-for="empleado in empleados" :key="empleado.id" :value="empleado.nombre">
+                                    <option v-for="empleado in gerentes" :key="empleado.id" :value="empleado.nombre">
                                         {{ empleado.nombre }}
                                     </option>
                                 </select>

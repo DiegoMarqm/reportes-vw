@@ -11,8 +11,6 @@ const props = defineProps({
     }
 });
 
-
-// Inicializamos el formulario con los campos adicionales
 const form = useForm({
     numFolio: '',
     departamento: '',
@@ -113,7 +111,6 @@ const empleadosFiltrados = ref([]);
 
 watch(() => form.departamento, (newDepartamento) => {
     empleadosFiltrados.value = props.empleados.filter(empleado => empleado.departamento === newDepartamento);
-    console.log('Empleados filtrados:', empleadosFiltrados.value); // Agrega esta línea para ver los empleados filtrados
 });
 
 const asesores = computed(() => {
@@ -124,9 +121,16 @@ const tecnicos = computed(() => {
     return empleadosFiltrados.value.filter(empleado => empleado.rol === 'Tecnico');
 });
 
+const asesoresTecnicos = computed(() => {
+    return empleadosFiltrados.value.filter(empleado => empleado.rol === 'Asesor' || empleado.rol === 'Tecnico');
+});
+
+
 const gerentes = computed(() => {
     return empleadosFiltrados.value.filter(empleado => empleado.rol == 'Gerente');
 })
+
+
 
 console.log(asesores);
 
@@ -503,7 +507,7 @@ console.log(asesores);
                                         <select v-model="medida.responsable"
                                             class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                             <option value="" disabled selected>Seleccionar...</option>
-                                            <option v-for="empleado in asesores" :key="empleado.id"
+                                            <option v-for="empleado in asesoresTecnicos" :key="empleado.id"
                                                 :value="empleado.nombre">{{
                                                     empleado.nombre }}</option>
                                         </select>
